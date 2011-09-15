@@ -1,41 +1,29 @@
 <?php
 	function QueryMinecraft( $IP, $Port = 25565 )
 	{
-		if( !( $Resource = @FSockOpen( 'tcp://' . GetHostByName( $IP ), (int)$Port ) ) )
+		$Socket = Socket_Create( AF_INET, SOCK_STREAM, SOL_TCP );
+		
+		if( $Socket === FALSE || @Socket_Connect( $Socket, $IP, (int)$Port ) === FALSE )
 		{
-			throw new Exception( "Can't open connection." );
+			return FALSE;
 		}
 		
-		Socket_Set_TimeOut( $Resource, 2 );
+		Socket_Send( $Socket, "\xFE", 1, 0 );
 		
-		FWrite( $Resource, "\xFE" );
+		if( ( $Length = Socket_Recv( $Socket, $Data, 100, 0 ) ) < 4 )
+		{
+			Socket_Close( $Socket );
+			return FALSE;
+		}
 		
-		$Data = FRead( $Resource, 1 );
+		Socket_Close( $Socket );
 		
 		if( $Data[ 0 ] != "\xFF" )
 		{
-			FClose( $Resource );
-			throw new Exception( "Server answered something else." );
+			return FALSE;
 		}
 		
-		$Data = FRead( $Resource, 2 );
-		
-		if( StrLen( $Data ) != 2 )
-		{
-			FClose( $Resource );
-			throw new Exception( "WTF?" );
-		}
-		
-		$Data = UnPack( "n", $Data );
-		
-		$Data = FRead( $Resource, $Data[ 1 ] * 2 );
-		FClose( $Resource );
-		
-		if( !$Data )
-		{
-			throw new Exception( "Server did not answer anything." );
-		}
-		
+		$Data = SubStr( $Data, 3 );
 		$Data = IconV( 'UTF-16BE', 'UTF-8', $Data );
 		$Data = Explode( "\xA7", $Data );
 		
@@ -46,18 +34,8 @@
 		);
 	}
 	
-	//////////////////////////////////////////////////////////////////////
-	
-	echo "<pre>";
-	
-	try
-	{
-		print_r( QueryMinecraft( 'localhost' ) );
-	}
-	catch( Exception $e )
-	{
-		echo "FAIL: " . $e->getMessage( );
-	}
-	
-	echo "</pre>";
+	// Usage
+	echo '<pre>';
+	var_dump( QueryMinecraft( 'c.nerd.nu' ) );
+	echo '</pre>';
 ?>
