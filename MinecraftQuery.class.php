@@ -33,9 +33,4 @@
 			'MaxPlayers' => IntVal( isset( $Data[ 2 ] ) ? $Data[ 2 ] : 0 )
 		);
 	}
-	
-	// Usage
-	echo '<pre>';
-	var_dump( QueryMinecraft( 'c.nerd.nu' ) );
-	echo '</pre>';
 ?>
