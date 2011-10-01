@@ -29,8 +29,8 @@
 		
 		return Array(
 			'HostName'   => Trim( SubStr( $Data[ 0 ], 0, -1 ) ),
-			'Players'    => IntVal( isset( $Data[ 1 ] ) ? $Data[ 1 ] : 0 ),
-			'MaxPlayers' => IntVal( isset( $Data[ 2 ] ) ? $Data[ 2 ] : 0 )
+			'Players'    => isset( $Data[ 1 ] ) ? IntVal( $Data[ 1 ] ) : 0,
+			'MaxPlayers' => isset( $Data[ 2 ] ) ? IntVal( $Data[ 2 ] ) : 0
 		);
 	}
 ?>
