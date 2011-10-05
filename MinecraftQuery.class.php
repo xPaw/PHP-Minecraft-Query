@@ -1,4 +1,15 @@
 <?php
+	/*
+	 * Queries Minecraft server (1.8+)
+	 *
+	 * @author xPaw
+	 * @link https://github.com/xPaw/PHP-Minecraft-Query
+	 *
+	 * @param $Ip - server ip
+	 * @param $Port - server port
+	 *
+	 * @return Array on success, false on failure.
+	 */
 	function QueryMinecraft( $IP, $Port = 25565 )
 	{
 		$Socket = Socket_Create( AF_INET, SOCK_STREAM, SOL_TCP );
@@ -9,16 +20,10 @@
 		}
 		
 		Socket_Send( $Socket, "\xFE", 1, 0 );
-		
-		if( Socket_Recv( $Socket, $Data, 100, 0 ) < 4 )
-		{
-			Socket_Close( $Socket );
-			return FALSE;
-		}
-		
+		$Len = Socket_Recv( $Socket, $Data, 100, 0 );
 		Socket_Close( $Socket );
 		
-		if( $Data[ 0 ] != "\xFF" )
+		if( $Len < 4 || $Data[ 0 ] != "\xFF" )
 		{
 			return FALSE;
 		}
