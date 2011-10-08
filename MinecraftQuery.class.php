@@ -20,7 +20,7 @@
 		}
 		
 		Socket_Send( $Socket, "\xFE", 1, 0 );
-		$Len = Socket_Recv( $Socket, $Data, 100, 0 );
+		$Len = Socket_Recv( $Socket, $Data, 256, 0 );
 		Socket_Close( $Socket );
 		
 		if( $Len < 4 || $Data[ 0 ] != "\xFF" )
@@ -33,7 +33,7 @@
 		$Data = Explode( "\xA7", $Data );
 		
 		return Array(
-			'HostName'   => Trim( SubStr( $Data[ 0 ], 0, -1 ) ),
+			'HostName'   => SubStr( $Data[ 0 ], 0, -1 ),
 			'Players'    => isset( $Data[ 1 ] ) ? IntVal( $Data[ 1 ] ) : 0,
 			'MaxPlayers' => isset( $Data[ 2 ] ) ? IntVal( $Data[ 2 ] ) : 0
 		);
