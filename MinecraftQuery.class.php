@@ -6,6 +6,13 @@ class MinecraftQueryException extends Exception
 
 class MinecraftQuery
 {
+	/*
+	 * Class written by xPaw
+	 *
+	 * Website: http://xpaw.ru
+	 * GitHub: https://github.com/xPaw/PHP-Minecraft-Query
+	 */
+	
 	private $Socket;
 	private $Challenge;
 	private $Info;
@@ -145,6 +152,7 @@ class MinecraftQuery
 	// DATA WORKERS
 	private function WriteData( $Command, $Append = "" )
 	{
+		$Signal  = $Command[ 0 ];
 		$Command = "\xFE\xFD" . $Command . "\x01\x02\x03\x04" . $Append;
 		$Length  = StrLen( $Command );
 		
@@ -155,7 +163,7 @@ class MinecraftQuery
 		
 		$Data = FRead( $this->Socket, 1440 );
 		
-		if( StrLen( $Data ) < 5 || $Data[ 0 ] != $Command[ 0 ] )
+		if( StrLen( $Data ) < 5 || $Data[ 0 ] != $Signal )
 		{
 			return false;
 		}
