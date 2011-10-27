@@ -43,29 +43,6 @@ class MinecraftQuery
 		}
 	}
 	
-	public function GetSimpleInfo( )
-	{
-		// Minecraft 1.8
-		
-		FWrite( $this->Socket, "\xFE" );
-		$Data = FRead( $this->Socket, 256 );
-		
-		if( $Data[ 0 ] != "\xFF" )
-		{
-			return false;
-		}
-		
-		$Data = SubStr( $Data, 3 );
-		$Data = iconv( 'UTF-16BE', 'UTF-8', $Data );
-		$Data = Explode( "\xA7", $Data );
-		
-		return Array(
-			'HostName'   => SubStr( $Data[ 0 ], 0, -1 ),
-			'Players'    => isset( $Data[ 1 ] ) ? IntVal( $Data[ 1 ] ) : 0,
-			'MaxPlayers' => isset( $Data[ 2 ] ) ? IntVal( $Data[ 2 ] ) : 0
-		);
-	}
-	
 	public function GetInfo( )
 	{
 		return isset( $this->Info[ 's' ] ) ? $this->Info[ 's' ] : false;
