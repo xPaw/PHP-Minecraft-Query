@@ -62,10 +62,7 @@ class MinecraftQuery
 			return false;
 		}
 		
-		$Data = Trim( $Data );
-		$Data = Chr( $Data >> 24 ) . Chr( $Data >> 16 ) . Chr( $Data >> 8 ) . Chr( $Data >> 0 );
-		
-		$this->Challenge = $Data;
+		$this->Challenge = Pack( 'N', $Data );
 		
 		return true;
 	}
