@@ -3,8 +3,14 @@ PHP Minecraft Query
 
 Description:
 ------------
-This simple function was made to query Minecraft servers. Notch introduced new packet in 1.8 to get server info, and this function simply queries and parses it.
+This class was created to query Minecraft servers.
 
-Usage:
-------
-`QueryMinecraft( 'server ip', 'server port' );`
+It currently works with Beta 1.9 Pre-Release 4+.
+
+Instructions:
+-------------
+Before using this class, you need to make sure that your server is running G4S (query server)
+
+Look for those settings in **server.properties**:
+* enable-query=true
+* query.port=25565
