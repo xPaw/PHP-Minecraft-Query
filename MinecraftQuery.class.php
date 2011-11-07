@@ -15,6 +15,7 @@ class MinecraftQuery
 	
 	private $Socket;
 	private $Challenge;
+	private $Players;
 	private $Info;
 	
 	public function Connect( $Ip, $Port = 25565, $Timeout = 3 )
@@ -45,12 +46,12 @@ class MinecraftQuery
 	
 	public function GetInfo( )
 	{
-		return isset( $this->Info[ 's' ] ) ? $this->Info[ 's' ] : false;
+		return isset( $this->Info ) ? $this->Info : false;
 	}
 	
 	public function GetPlayers( )
 	{
-		return isset( $this->Info[ 'p' ] ) ? $this->Info[ 'p' ] : false;
+		return isset( $this->Players ) ? $this->Players : false;
 	}
 	
 	private function GetChallenge( )
@@ -76,54 +77,64 @@ class MinecraftQuery
 			return false;
 		}
 		
+		$Last = "";
 		$Info = Array( );
 		
-		$this->_CutString( $Data ); // splitnum
-		$this->_CutByte( $Data ); // 128?
-		$this->_CutByte( $Data ); // 0?
-		$this->_CutString( $Data ); // hostname
-		$Info[ 's' ][ 'HostName' ] = $this->_CutString( $Data );
-		$this->_CutString( $Data ); // gametype
-		$Info[ 's' ][ 'GameType' ] = $this->_CutString( $Data );
-		$this->_CutString( $Data ); // game_id
-		$this->_CutString( $Data ); // MINECRAFT
-		$this->_CutString( $Data ); // version
-		$Info[ 's' ][ 'Version' ] = $this->_CutString( $Data );
-		$this->_CutString( $Data ); // plugins
-		$this->_CutString( $Data ); // ""
-		$this->_CutString( $Data ); // map
-		$Info[ 's' ][ 'Map' ] = $this->_CutString( $Data );
-		$this->_CutString( $Data ); // numplayers
-		$Info[ 's' ][ 'Players' ] = (int)$this->_CutString( $Data );
-		$this->_CutString( $Data ); // maxplayers
-		$Info[ 's' ][ 'MaxPlayers' ] = (int)$this->_CutString( $Data );
-		$this->_CutString( $Data ); // hostport
-		$Info[ 's' ][ 'HostPort' ] = (int)$this->_CutString( $Data );
-		$this->_CutString( $Data ); // hostip
-		$Info[ 's' ][ 'HostIp' ] = $this->_CutString( $Data );
+		$Data    = SubStr( $Data, 11 ); // splitnum + 2 int
+		$Data    = Explode( "\x00\x00\x01player_\x00\x00", $Data );
+		$Players = SubStr( $Data[ 1 ], 0, -2 );
+		$Data    = Explode( "\x00", $Data[ 0 ] );
 		
-		if( $Info[ 's' ][ 'Players' ] > 0 )
+		if( $Data[ 0 ] == "hostname" ) { $Data[ 0 ] = "motd"; } // Temporary fix
+		
+		ForEach( $Data as $Key => $Value )
 		{
-			$this->_CutByte( $Data ); // 0?
-			$this->_CutByte( $Data ); // 1?
-			$this->_CutString( $Data ); // player_
-			$this->_CutByte( $Data ); // 0?
-			
-			for( $i = 0; $i < $Info[ 's' ][ 'Players' ]; $i++ )
+			if( ~$Key & 1 )
 			{
-				$Info[ 'p' ][ ] = $this->_CutString( $Data );
+				$Last = $Value;
+				$Info[ $Value ] = "";
 			}
+			else
+			{
+				$Info[ $Last ] = $Value;
+			}
+		}
+		
+		// Ints
+		$Info[ 'numplayers' ] = IntVal( $Info[ 'numplayers' ] );
+		$Info[ 'maxplayers' ] = IntVal( $Info[ 'maxplayers' ] );
+		$Info[ 'hostport' ]   = IntVal( $Info[ 'hostport' ] );
+		
+		// Parse "plugins", if any
+		if( $Info[ 'plugins' ] )
+		{
+			$Data = Explode( ": ", $Info[ 'plugins' ], 2 );
 			
-			$this->_CutByte( $Data ); // 0?
+			$Info[ 'raw_plugins' ] = $Info[ 'plugins' ];
+			$Info[ 'software' ]    = $Data[ 0 ];
+			
+			if( Count( $Data ) == 2 )
+			{
+				$Info[ 'plugins' ] = Explode( "; ", $Data[ 1 ] );
+			}
+		}
+		else
+		{
+			$Info[ 'software' ] = 'Vanilla';
 		}
 		
 		$this->Info = $Info;
+		
+		if( $Players )
+		{
+			$this->Players = Explode( "\x00", $Players );
+		}
 		
 		return true;
 	}
 	
 	// ==========================================================
-	// DATA WORKERS
+	
 	private function WriteData( $Command, $Append = "" )
 	{
 		$Signal  = $Command[ 0 ];
@@ -143,37 +154,6 @@ class MinecraftQuery
 		}
 		
 		return SubStr( $Data, 5 );
-	}
-	
-	private function _CutNumber( &$Buffer )
-	{
-		return Ord( $this->_CutByte( $Buffer ) );
-	}
-	
-	private function _CutByte( &$Buffer, $Length = 1 )
-	{
-		$String = SubStr( $Buffer, 0, $Length );
-		$Buffer = SubStr( $Buffer, $Length );
-		
-		return $String;
-	}
-	
-	private function _CutString( &$Buffer )
-	{
-		$Length = StrPos( $Buffer, "\x00" );
-		
-		if( $Length === FALSE )
-		{
-			$String = $Buffer;
-			$Buffer = "";
-		}
-		else
-		{
-			$String = $this->_CutByte( $Buffer, ++$Length );
-			$String = SubStr( $String, 0, -1 );
-		}
-		
-		return $String;
 	}
 }
 
