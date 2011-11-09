@@ -85,42 +85,64 @@ class MinecraftQuery
 		$Players = SubStr( $Data[ 1 ], 0, -2 );
 		$Data    = Explode( "\x00", $Data[ 0 ] );
 		
-		if( $Data[ 0 ] == "hostname" ) { $Data[ 0 ] = "motd"; } // Temporary fix
+		// Array with known keys in order to validate the result
+		// It can happen that server sends custom strings containing bad things (who can know!)
+		$Keys = Array(
+			'hostname'   => 'HostName',
+			'gametype'   => 'GameType',
+			'version'    => 'Version',
+			'plugins'    => 'Plugins',
+			'map'        => 'Map',
+			'numplayers' => 'Players',
+			'maxplayers' => 'MaxPlayers',
+			'hostport'   => 'HostPort',
+			'hostip'     => 'HostIp'
+		);
 		
-		ForEach( $Data as $Key => $Value )
+		if( $Data[ 18 ] == "hostname" ) { $Data[ 18 ] = "hostip"; } // Temporary fix
+		
+		foreach( $Data as $Key => $Value )
 		{
 			if( ~$Key & 1 )
 			{
-				$Last = $Value;
-				$Info[ $Value ] = "";
+				if( !Array_Key_Exists( $Value, $Keys ) )
+				{
+					$Last = false;
+					continue;
+				}
+				
+				$Last = $Keys[ $Value ];
+				$Info[ $Last ] = "";
 			}
-			else
+			else if( $Last != false )
 			{
+				// TODO: Filter html vars, potential security "exploits"?
+				
 				$Info[ $Last ] = $Value;
 			}
 		}
 		
 		// Ints
-		$Info[ 'numplayers' ] = IntVal( $Info[ 'numplayers' ] );
-		$Info[ 'maxplayers' ] = IntVal( $Info[ 'maxplayers' ] );
-		$Info[ 'hostport' ]   = IntVal( $Info[ 'hostport' ] );
+		$Info[ 'Players' ]    = IntVal( $Info[ 'Players' ] );
+		$Info[ 'MaxPlayers' ] = IntVal( $Info[ 'MaxPlayers' ] );
+		$Info[ 'HostPort' ]   = IntVal( $Info[ 'HostPort' ] );
 		
 		// Parse "plugins", if any
-		if( $Info[ 'plugins' ] )
+		if( $Info[ 'Plugins' ] )
 		{
-			$Data = Explode( ": ", $Info[ 'plugins' ], 2 );
+			$Data = Explode( ": ", $Info[ 'Plugins' ], 2 );
 			
-			$Info[ 'raw_plugins' ] = $Info[ 'plugins' ];
-			$Info[ 'software' ]    = $Data[ 0 ];
+			$Info[ 'RawPlugins' ] = $Info[ 'Plugins' ];
+			$Info[ 'Software' ]    = $Data[ 0 ];
 			
 			if( Count( $Data ) == 2 )
 			{
-				$Info[ 'plugins' ] = Explode( "; ", $Data[ 1 ] );
+				$Info[ 'Plugins' ] = Explode( "; ", $Data[ 1 ] );
 			}
 		}
 		else
 		{
-			$Info[ 'software' ] = 'Vanilla';
+			$Info[ 'Software' ] = 'Vanilla';
 		}
 		
 		$this->Info = $Info;
@@ -133,11 +155,8 @@ class MinecraftQuery
 		return true;
 	}
 	
-	// ==========================================================
-	
 	private function WriteData( $Command, $Append = "" )
 	{
-		$Signal  = $Command[ 0 ];
 		$Command = "\xFE\xFD" . $Command . "\x01\x02\x03\x04" . $Append;
 		$Length  = StrLen( $Command );
 		
@@ -148,7 +167,7 @@ class MinecraftQuery
 		
 		$Data = FRead( $this->Socket, 1440 );
 		
-		if( StrLen( $Data ) < 5 || $Data[ 0 ] != $Signal )
+		if( StrLen( $Data ) < 5 || $Data[ 0 ] != $Command[ 2 ] )
 		{
 			return false;
 		}
@@ -171,4 +190,3 @@ class MinecraftQuery
 		echo "FAIL: " . $e->getMessage( );
 	}
 	echo '</pre>';
-?>
