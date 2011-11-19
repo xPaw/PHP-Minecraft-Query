@@ -12,6 +12,7 @@ try {
 <html>
 	<head>
 		<title>Minecraft Server Status</title>
+		<link rel="stylesheet" type="text/css" href="assets/style.css" />
 	</head>
 	<body>
 <h1>Minecraft Server Status</h1>
