@@ -1,0 +1,55 @@
+body {
+	background-color: #222;
+	font-family: sans-serif;
+	width: 750px;
+	margin: 0px auto;
+	color: #ddd;
+	padding-top: 30px;
+}
+
+h1 {
+	text-align: center;
+}
+
+table {
+	width: 370px;
+	border-collapse:collapse;
+}
+
+th, td {
+	padding: 3px;
+}
+
+th {
+	text-align: center;
+}
+
+table, th, td {
+	border: 1px solid gray;
+}
+
+tr:first-child th {
+	color: #bdd;
+}
+
+.info {
+	float: left;
+}
+
+.players {
+	float: right;
+}
+
+.players td {
+	text-align: center;
+}
+
+.error {
+	width: 200px;
+	margin: 20px auto;
+	padding: 20px;
+	font-weight: bold;
+	border: 2px solid red;
+	background-color: gray;
+	text-align: center;
+}
