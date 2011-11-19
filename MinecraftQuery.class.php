@@ -36,8 +36,6 @@ class MinecraftQuery
 				throw new MinecraftQueryException( "Failed to receive challenge." );
 			}
 			
-			sleep(1);
-			
 			if( !$this->GetStatus( ) )
 			{
 				FClose( $this->Socket );
@@ -172,7 +170,7 @@ class MinecraftQuery
 		{
 			// Check if we need to wait
 			$wait = $this->LastRequest - microtime( true )
-				- self::TIME_BETWEEN_SEND;
+				+ self::TIME_BETWEEN_SEND;
 			if ( $wait > 0 ) usleep( $wait );
 		}
 		
