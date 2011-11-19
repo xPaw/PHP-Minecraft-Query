@@ -20,6 +20,10 @@ th, td {
 	padding: 3px;
 }
 
+th {
+	text-align: center;
+}
+
 table, th, td {
 	border: 1px solid gray;
 }
@@ -34,6 +38,10 @@ tr:first-child th {
 
 .players {
 	float: right;
+}
+
+.players td {
+	text-align: center;
 }
 
 .error {
