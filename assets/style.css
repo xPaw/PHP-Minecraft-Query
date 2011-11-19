@@ -1,0 +1,11 @@
+body {
+}
+
+.error {
+	width: 200px;
+	margin: 20px auto;
+	padding: 20px;
+	font-weight: bold;
+	border: 2px solid red;
+	background-color: gray;
+}
