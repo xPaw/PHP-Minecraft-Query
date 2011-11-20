@@ -13,16 +13,10 @@ class MinecraftQuery
 	 * GitHub: https://github.com/xPaw/PHP-Minecraft-Query
 	 */
 	
-	/**
-	 * The time in microseconds to wait between sends.
-	 */
-	const TIME_BETWEEN_SEND = 1000000;
-	
 	private $Socket;
 	private $Challenge;
 	private $Players;
 	private $Info;
-	private $LastRequestTime;
 	
 	public function Connect( $Ip, $Port = 25565, $Timeout = 3 )
 	{
@@ -166,21 +160,12 @@ class MinecraftQuery
 		$Command = "\xFE\xFD" . $Command . "\x01\x02\x03\x04" . $Append;
 		$Length  = StrLen( $Command );
 		
-		if ( isset( $this->LastRequest ) )
-		{
-			// Check if we need to wait
-			$wait = $this->LastRequest - microtime( true )
-				+ self::TIME_BETWEEN_SEND;
-			if ( $wait > 0 ) usleep( $wait );
-		}
-		
 		if( $Length !== FWrite( $this->Socket, $Command, $Length ) )
 		{
 			return false;
 		}
 		
 		$Data = FRead( $this->Socket, 1440 );
-		$this->LastRequest = microtime( true );
 		
 		if( StrLen( $Data ) < 5 || $Data[ 0 ] != $Command[ 2 ] )
 		{
@@ -190,4 +175,3 @@ class MinecraftQuery
 		return SubStr( $Data, 5 );
 	}
 }
-
