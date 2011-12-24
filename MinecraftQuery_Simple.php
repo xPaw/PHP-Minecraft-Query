@@ -37,4 +37,3 @@
 			'MaxPlayers' => isset( $Data[ 2 ] ) ? IntVal( $Data[ 2 ] ) : 0
 		);
 	}
-?>

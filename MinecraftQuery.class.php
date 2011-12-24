@@ -99,8 +99,6 @@ class MinecraftQuery
 			'hostip'     => 'HostIp'
 		);
 		
-		if( $Data[ 18 ] == "hostname" ) { $Data[ 18 ] = "hostip"; } // Temporary fix
-		
 		foreach( $Data as $Key => $Value )
 		{
 			if( ~$Key & 1 )
