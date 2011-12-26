@@ -1,9 +1,9 @@
 <?php
-	define( 'MQ_SERVER_ADDR', 'mc.xpaw.ru' );
+	define( 'MQ_SERVER_ADDR', 'localhost' );
 	define( 'MQ_SERVER_PORT', 25565 );
 	define( 'MQ_TIMEOUT', 1 );
 	
-	require 'MinecraftQuery.class.php';
+	require __DIR__ . '/MinecraftQuery.class.php';
 	
 	$Query = new MinecraftQuery( );
 	
@@ -24,21 +24,11 @@
 	<title>Minecraft Query PHP Class</title>
 	<link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css">
 	<style>
-		body {
-			padding-top: 45px;
-			background-color: #049CD9;
-			background-repeat: no-repeat;
-			background-image: -webkit-gradient(linear, left top, left bottom, from(#004D9F), to(#049cd9));
-			background-image: -webkit-linear-gradient(#004D9F, #049cd9);
-			background-image: -moz-linear-gradient(#004D9F, #049cd9);
-			background-image: -o-linear-gradient(top, #004D9F, #049cd9);
-			background-image: -khtml-gradient(linear, left top, left bottom, from(#004D9F), to(#049cd9));
-			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#004D9F', endColorstr='#049cd9', GradientType=0);
-		}
-		
-		.bordered-table { background: white; }
+		body { padding-top: 45px; background-color: #004D9F; }
 		thead { background: whiteSmoke; }
 		h1 { text-align: center; color: white; text-shadow: 0px 0px 20px #DDD; }
+		
+		.bordered-table { background: white; }
 		.alert-message { width: 360px; text-align: center; margin: 0 auto; }
 	</style>
 </head>
@@ -52,8 +42,6 @@
 			<p><b>Error:</b> <?php echo $Error; ?></p>
 		</div>
 <?php else: ?>
-		<!--h2>xPaw is here. <span class="label important">OFFLINE</span></h2--> 
-		
 		<div class="row">
 			<div class="span8">
 				<table class="bordered-table zebra-striped">

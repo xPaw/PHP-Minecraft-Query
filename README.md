@@ -5,7 +5,7 @@ Description:
 ------------
 This class was created to query Minecraft servers.
 
-It currently works with Beta 1.9 Pre-Release 4+.
+It works starting from Minecraft 1.0
 
 Instructions:
 -------------
