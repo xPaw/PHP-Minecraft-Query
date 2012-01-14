@@ -1,0 +1,4 @@
+language: php
+phps:
+  - 5.0
+  - 5.4
