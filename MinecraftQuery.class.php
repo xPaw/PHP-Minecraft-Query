@@ -114,8 +114,6 @@ class MinecraftQuery
 			}
 			else if( $Last != false )
 			{
-				// TODO: Filter html vars, potential security "exploits"?
-				
 				$Info[ $Last ] = $Value;
 			}
 		}
@@ -131,7 +129,7 @@ class MinecraftQuery
 			$Data = Explode( ": ", $Info[ 'Plugins' ], 2 );
 			
 			$Info[ 'RawPlugins' ] = $Info[ 'Plugins' ];
-			$Info[ 'Software' ]    = $Data[ 0 ];
+			$Info[ 'Software' ]   = $Data[ 0 ];
 			
 			if( Count( $Data ) == 2 )
 			{
