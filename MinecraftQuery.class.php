@@ -13,8 +13,10 @@ class MinecraftQuery
 	 * GitHub: https://github.com/xPaw/PHP-Minecraft-Query
 	 */
 	
+	const STATISTIC = 0x00;
+	const HANDSHAKE = 0x09;
+	
 	private $Socket;
-	private $Challenge;
 	private $Players;
 	private $Info;
 	
@@ -24,13 +26,15 @@ class MinecraftQuery
 		{
 			Socket_Set_TimeOut( $this->Socket, $Timeout );
 			
-			if( !$this->GetChallenge( ) )
+			$Challenge = $this->GetChallenge( );
+			
+			if( $Challenge === false )
 			{
 				FClose( $this->Socket );
 				throw new MinecraftQueryException( "Failed to receive challenge." );
 			}
 			
-			if( !$this->GetStatus( ) )
+			if( !$this->GetStatus( $Challenge ) )
 			{
 				FClose( $this->Socket );
 				throw new MinecraftQueryException( "Failed to receive status." );
@@ -56,21 +60,14 @@ class MinecraftQuery
 	
 	private function GetChallenge( )
 	{
-		$Data = $this->WriteData( "\x09" );
-	
-		if( !$Data )
-		{
-			return false;
-		}
+		$Data = $this->WriteData( self :: HANDSHAKE );
 		
-		$this->Challenge = Pack( 'N', $Data );
-		
-		return true;
+		return $Data ? Pack( 'N', $Data ) : false;
 	}
 	
-	private function GetStatus( )
+	private function GetStatus( $Challenge )
 	{
-		$Data = $this->WriteData( "\x00", $this->Challenge . "\x01\x02\x03\x04" );
+		$Data = $this->WriteData( self :: STATISTIC, $Challenge . Pack( 'c*', 0x00, 0x00, 0x00, 0x00 ) );
 		
 		if( !$Data )
 		{
@@ -153,7 +150,7 @@ class MinecraftQuery
 	
 	private function WriteData( $Command, $Append = "" )
 	{
-		$Command = "\xFE\xFD" . $Command . "\x01\x02\x03\x04" . $Append;
+		$Command = Pack( 'c*', 0xFE, 0xFD, $Command, 0x01, 0x02, 0x03, 0x04 ) . $Append;
 		$Length  = StrLen( $Command );
 		
 		if( $Length !== FWrite( $this->Socket, $Command, $Length ) )

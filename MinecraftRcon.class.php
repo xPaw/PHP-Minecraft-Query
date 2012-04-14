@@ -24,9 +24,6 @@ class MinecraftRcon
 	const SERVERDATA_AUTH_RESPONSE  = 2;
 	
 	private $Socket;
-	private $Challenge;
-	private $Players;
-	private $Info;
 	private $RequestId;
 	
 	public function __destruct( )
