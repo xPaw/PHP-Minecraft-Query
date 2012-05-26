@@ -22,30 +22,36 @@ class MinecraftQuery
 	
 	public function Connect( $Ip, $Port = 25565, $Timeout = 3 )
 	{
-		if( $this->Socket = FSockOpen( 'udp://' . $Ip, (int)$Port ) )
+		if( !is_int( $Timeout ) || $Timeout < 0 )
 		{
-			Socket_Set_TimeOut( $this->Socket, $Timeout );
-			
+			throw new InvalidArgumentException( 'Timeout must be an integer.' );
+		}
+		
+		$this->Socket = FSockOpen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, $Timeout );
+		
+		if( $ErrNo || $this->Socket === false )
+		{
+			throw new MinecraftQueryException( 'Could not create socket: ' . $ErrStr );
+		}
+		
+		Stream_Set_Timeout( $this->Socket, $Timeout );
+		Stream_Set_Blocking( $this->Socket, true );
+		
+		try
+		{
 			$Challenge = $this->GetChallenge( );
 			
-			if( $Challenge === false )
-			{
-				FClose( $this->Socket );
-				throw new MinecraftQueryException( "Failed to receive challenge." );
-			}
-			
-			if( !$this->GetStatus( $Challenge ) )
-			{
-				FClose( $this->Socket );
-				throw new MinecraftQueryException( "Failed to receive status." );
-			}
-			
-			FClose( $this->Socket );
+			$this->GetStatus( $Challenge );
 		}
-		else
+		// We catch this because we want to close the socket, not very elegant
+		catch( MinecraftQueryException $e )
 		{
-			throw new MinecraftQueryException( "Can't open connection." );
+			FClose( $this->Socket );
+			
+			throw new MinecraftQueryException( $e->getMessage( ) );
 		}
+		
+		FClose( $this->Socket );
 	}
 	
 	public function GetInfo( )
@@ -62,7 +68,12 @@ class MinecraftQuery
 	{
 		$Data = $this->WriteData( self :: HANDSHAKE );
 		
-		return $Data ? Pack( 'N', $Data ) : false;
+		if( $Data === false )
+		{
+			throw new MinecraftQueryException( "Failed to receive challenge." );
+		}
+		
+		return Pack( 'N', $Data );
 	}
 	
 	private function GetStatus( $Challenge )
@@ -71,7 +82,7 @@ class MinecraftQuery
 		
 		if( !$Data )
 		{
-			return false;
+			throw new MinecraftQueryException( "Failed to receive status." );
 		}
 		
 		$Last = "";
@@ -144,8 +155,6 @@ class MinecraftQuery
 		{
 			$this->Players = Explode( "\x00", $Players );
 		}
-		
-		return true;
 	}
 	
 	private function WriteData( $Command, $Append = "" )
@@ -155,10 +164,15 @@ class MinecraftQuery
 		
 		if( $Length !== FWrite( $this->Socket, $Command, $Length ) )
 		{
-			return false;
+			throw new MinecraftQueryException( "Failed to write on socket." );
 		}
 		
 		$Data = FRead( $this->Socket, 1440 );
+		
+		if( $Data === false )
+		{
+			throw new MinecraftQueryException( "Failed to read from socket." );
+		}
 		
 		if( StrLen( $Data ) < 5 || $Data[ 0 ] != $Command[ 2 ] )
 		{

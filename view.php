@@ -5,6 +5,10 @@
 	define( 'MQ_TIMEOUT', 1 );
 	// Edit this <-
 	
+	// Display everything in browser, because some people can't look in logs for errors
+	Error_Reporting( E_ALL | E_STRICT );
+	Ini_Set( 'display_errors', true );
+	
 	require __DIR__ . '/MinecraftQuery.class.php';
 	
 	$Timer = MicroTime( true );
