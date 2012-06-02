@@ -27,7 +27,7 @@ class MinecraftQuery
 			throw new InvalidArgumentException( 'Timeout must be an integer.' );
 		}
 		
-		$this->Socket = FSockOpen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, $Timeout );
+		$this->Socket = @FSockOpen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, $Timeout );
 		
 		if( $ErrNo || $this->Socket === false )
 		{
