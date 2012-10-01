@@ -21,7 +21,7 @@ Look for those settings in **server.properties**:
 	
 	try
 	{
-		$Query->Connect( 'localhost', 27015, 1 );
+		$Query->Connect( 'localhost', 25565 );
 		
 		print_r( $Query->GetInfo( ) );
 		print_r( $Query->GetPlayers( ) );
