@@ -48,7 +48,7 @@ class MinecraftRcon
 		}
 		else
 		{
-			throw new MinecraftQueryException( "Can't open socket." );
+			throw new MinecraftRconException( "Can't open socket." );
 		}
 	}
 	
