@@ -1,6 +1,6 @@
 <?php
 	/*
-	 * Queries Minecraft server (1.8+)
+	 * Queries Minecraft server
 	 * Returns array on success, false on failure.
 	 *
 	 * Written by xPaw
@@ -20,22 +20,39 @@
 			return FALSE;
 		}
 		
-		Socket_Send( $Socket, "\xFE", 1, 0 );
+		Socket_Send( $Socket, "\xFE\x01", 2, 0 );
 		$Len = Socket_Recv( $Socket, $Data, 256, 0 );
 		Socket_Close( $Socket );
 		
-		if( $Len < 4 || $Data[ 0 ] != "\xFF" )
+		if( $Len < 4 || $Data[ 0 ] !== "\xFF" )
 		{
 			return FALSE;
 		}
 		
-		$Data = SubStr( $Data, 3 );
+		$Data = SubStr( $Data, 3 ); // Strip packet header (kick message packet and short length)
 		$Data = iconv( 'UTF-16BE', 'UTF-8', $Data );
+		
+		// Are we dealing with Minecraft 1.4+ server?
+		if( $Data[ 1 ] === "\xA7" && $Data[ 2 ] === "\x31" )
+		{
+			$Data = Explode( "\x00", $Data );
+			
+			return Array(
+				'HostName'   => $Data[ 3 ],
+				'Players'    => IntVal( $Data[ 4 ] ),
+				'MaxPlayers' => IntVal( $Data[ 5 ] ),
+				'Protocol'   => IntVal( $Data[ 1 ] ),
+				'Version'    => $Data[ 2 ]
+			);
+		}
+		
 		$Data = Explode( "\xA7", $Data );
 		
 		return Array(
 			'HostName'   => SubStr( $Data[ 0 ], 0, -1 ),
 			'Players'    => isset( $Data[ 1 ] ) ? IntVal( $Data[ 1 ] ) : 0,
-			'MaxPlayers' => isset( $Data[ 2 ] ) ? IntVal( $Data[ 2 ] ) : 0
+			'MaxPlayers' => isset( $Data[ 2 ] ) ? IntVal( $Data[ 2 ] ) : 0,
+			'Protocol'   => 0,
+			'Version'    => '1.3'
 		);
 	}
