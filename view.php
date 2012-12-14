@@ -9,7 +9,7 @@
 	Error_Reporting( E_ALL | E_STRICT );
 	Ini_Set( 'display_errors', true );
 	
-	require __DIR__ . '/MinecraftQuery.class.php';
+	require_once __DIR__ . '/MinecraftQuery.class.php';
 	
 	$Timer = MicroTime( true );
 	$Query = new MinecraftQuery( );
