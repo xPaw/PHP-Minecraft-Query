@@ -24,9 +24,17 @@
 	}
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" xmlns="http://www.w3.org/1999/xhtml"> <!--<![endif]-->
 <head>
-	<meta charset="utf-8">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<meta name="keywords" content="Minecraft, Stats, HTML5, Query" />
+	<meta name="author" lang="en" content="xPaw (email)" />
+	<meta name="description" content="Minecraft Stats Via Query"  />
+	<meta name="copyright" content="xPaw Copyright (c) 2012" />
+	
 	<title>Minecraft Query PHP Class</title>
 	
 	<link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
@@ -41,6 +49,10 @@
 			color: #555;
 		}
 	</style>
+	<!-- IE Fix for HTML5 Tags -->
+	<!--[if lt IE 9]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
 </head>
 
 <body>
