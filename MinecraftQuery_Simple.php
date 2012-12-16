@@ -11,8 +11,12 @@
 	
 	function QueryMinecraft( $IP, $Port = 25565, $Timeout = 2 )
 	{
-		$Socket = Socket_Create( AF_INET, SOCK_STREAM, SOL_TCP );
-		
+		if (!extension_loaded('sockets')) {
+			return "The sockets extension is not loaded. uncomment or add 'extension=php_sockets.dll' in your .ini file";
+		}
+		else{
+		$Socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+
 		Socket_Set_Option( $Socket, SOL_SOCKET, SO_SNDTIMEO, array( 'sec' => (int)$Timeout, 'usec' => 0 ) );
 		
 		if( $Socket === FALSE || @Socket_Connect( $Socket, $IP, (int)$Port ) === FALSE )
@@ -55,4 +59,5 @@
 			'Protocol'   => 0,
 			'Version'    => '1.3'
 		);
+		}
 	}
