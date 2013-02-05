@@ -22,7 +22,7 @@
 		}
 		
 		Socket_Send( $Socket, "\xFE\x01", 2, 0 );
-		$Len = Socket_Recv( $Socket, $Data, 256, 0 );
+		$Len = Socket_Recv( $Socket, $Data, 512, 0 );
 		Socket_Close( $Socket );
 		
 		if( $Len < 4 || $Data[ 0 ] !== "\xFF" )
