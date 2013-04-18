@@ -12,6 +12,9 @@ Look for those settings in **server.properties**:
 > *enable-query=true*<br>
 > *query.port=25565*
 
+## RCON
+Minecraft implements [Source RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol), so I suggest using [PHP Source Query](https://github.com/xPaw/PHP-Source-Query-Class) library for your RCON needs.
+
 ## Example
 ```php
 <?php
