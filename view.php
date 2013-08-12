@@ -1,7 +1,7 @@
 <?php
 	// Edit this ->
 	define( 'MQ_SERVER_ADDR', 'localhost' );
-	define( 'MQ_SERVER_PORT', 25565 );
+	define( 'MQ_SERVER_PORT', 25566 );
 	define( 'MQ_TIMEOUT', 1 );
 	// Edit this <-
 	
@@ -12,6 +12,7 @@
 	require __DIR__ . '/MinecraftQuery.class.php';
 	
 	$Timer = MicroTime( true );
+	
 	$Query = new MinecraftQuery( );
 	
 	try
@@ -20,8 +21,10 @@
 	}
 	catch( MinecraftQueryException $e )
 	{
-		$Error = $e->getMessage( );
+		$Exception = $e;
 	}
+	
+	$Timer = Number_Format( MicroTime( true ) - $Timer, 4, '.', '' );
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,38 +32,47 @@
 	<meta charset="utf-8">
 	<title>Minecraft Query PHP Class</title>
 	
-	<link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css">
 	<style type="text/css">
-		footer {
-			margin-top: 45px;
-			padding: 35px 0 36px;
-			border-top: 1px solid #e5e5e5;
+		.jumbotron {
+			margin-top: 30px;
+			border-radius: 0;
 		}
-		footer p {
-			margin-bottom: 0;
-			color: #555;
+		
+		.table thead th {
+			background-color: #428BCA;
+			border-color: #428BCA !important;
+			color: #FFF;
 		}
 	</style>
 </head>
 
 <body>
     <div class="container">
-    	<div class="page-header">
+    	<div class="jumbotron">
 			<h1>Minecraft Query PHP Class</h1>
+			
+			<p>This class was created to query Minecraft servers. It works starting from Minecraft 1.0.</p>
+			
+			<p>
+				<a class="btn btn-large btn-primary" href="http://xpaw.ru">Made by xPaw</a>
+				<a class="btn btn-large btn-primary" href="https://github.com/xPaw/PHP-Minecraft-Query">View on GitHub</a>
+				<a class="btn btn-large btn-danger" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a>
+			</p>
 		</div>
 
-<?php if( isset( $Error ) ): ?>
-		<div class="alert alert-info">
-			<h4 class="alert-heading">Exception:</h4>
-			<?php echo htmlspecialchars( $Error ); ?>
+<?php if( isset( $Exception ) ): ?>
+		<div class="panel panel-primary">
+			<div class="panel-heading"><?php echo htmlspecialchars( $Exception->getMessage( ) ); ?></div>
+			<p><?php echo nl2br( $e->getTraceAsString(), false ); ?></p>
 		</div>
 <?php else: ?>
 		<div class="row">
-			<div class="span6">
+			<div class="col-sm-6">
 				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
-							<th colspan="2">Server info</th>
+							<th colspan="2">Server Info <em>(queried in <?php echo $Timer; ?>s)</em></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -82,11 +94,15 @@
 ?></td>
 						</tr>
 <?php endforeach; ?>
+<?php else: ?>
+						<tr>
+							<td colspan="2">No information received</td>
+						</tr>
 <?php endif; ?>
 					</tbody>
 				</table>
 			</div>
-			<div class="span6">
+			<div class="col-sm-6">
 				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
@@ -102,7 +118,7 @@
 <?php endforeach; ?>
 <?php else: ?>
 						<tr>
-							<td>No players in da house!</td>
+							<td>No players in da house</td>
 						</tr>
 <?php endif; ?>
 					</tbody>
@@ -110,13 +126,6 @@
 			</div>
 		</div>
 <?php endif; ?>
-		<footer>
-			<p class="pull-right">Generated in <span class="badge badge-success"><?php echo Number_Format( ( MicroTime( true ) - $Timer ), 4, '.', '' ); ?>s</span></p>
-			
-			<p>Written by <a href="http://xpaw.ru" target="_blank">xPaw</a></p>
-			<p>Code licensed under the <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">CC BY-NC-SA 3.0</a></p>
-			<p>Sourcecode available on <a href="https://github.com/xPaw/PHP-Minecraft-Query" target="_blank">GitHub</a></p>
-		</footer>
 	</div>
 </body>
 </html>
