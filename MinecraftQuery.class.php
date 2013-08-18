@@ -70,7 +70,7 @@ class MinecraftQuery
 		
 		if( $Data === false )
 		{
-			throw new MinecraftQueryException( "Failed to receive challenge." );
+			throw new MinecraftQueryException( 'Failed to receive challenge.' );
 		}
 		
 		return Pack( 'N', $Data );
@@ -82,14 +82,20 @@ class MinecraftQuery
 		
 		if( !$Data )
 		{
-			throw new MinecraftQueryException( "Failed to receive status." );
+			throw new MinecraftQueryException( 'Failed to receive status.' );
 		}
 		
-		$Last = "";
+		$Last = '';
 		$Info = Array( );
 		
 		$Data    = SubStr( $Data, 11 ); // splitnum + 2 int
 		$Data    = Explode( "\x00\x00\x01player_\x00\x00", $Data );
+		
+		if( Count( $Data ) !== 2 )
+		{
+			throw new MinecraftQueryException( 'Failed to parse server\'s response.' );
+		}
+		
 		$Players = SubStr( $Data[ 1 ], 0, -2 );
 		$Data    = Explode( "\x00", $Data[ 0 ] );
 		
@@ -118,7 +124,7 @@ class MinecraftQuery
 				}
 				
 				$Last = $Keys[ $Value ];
-				$Info[ $Last ] = "";
+				$Info[ $Last ] = '';
 			}
 			else if( $Last != false )
 			{
