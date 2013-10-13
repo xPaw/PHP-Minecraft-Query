@@ -3,6 +3,8 @@
 	 * Queries Minecraft server
 	 * Returns array on success, false on failure.
 	 *
+	 * WARNING: This is using an old "ping" feature, only use this to ping servers prior to 1.7 version.
+	 *
 	 * Written by xPaw
 	 *
 	 * Website: http://xpaw.ru
