@@ -22,9 +22,9 @@ class MinecraftQuery
 	
 	public function Connect( $Ip, $Port = 25565, $Timeout = 3 )
 	{
-		if( !is_int( $Timeout ) || $Timeout < 0 )
+		if( !is_numeric( $Timeout ) || $Timeout < 0 )
 		{
-			throw new InvalidArgumentException( 'Timeout must be an integer.' );
+			throw new InvalidArgumentException( 'Timeout must be a positive number.' );
 		}
 		
 		$this->Socket = @FSockOpen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, $Timeout );
@@ -33,8 +33,8 @@ class MinecraftQuery
 		{
 			throw new MinecraftQueryException( 'Could not create socket: ' . $ErrStr );
 		}
-		
-		Stream_Set_Timeout( $this->Socket, $Timeout );
+		//Add support for float timeouts by splitting it into an int time and microtime 
+		Stream_Set_Timeout( $this->Socket, floor($Timeout), round(($Timeout-floor($Timeout))*1000000) ); 
 		Stream_Set_Blocking( $this->Socket, true );
 		
 		try
