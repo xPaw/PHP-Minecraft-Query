@@ -32,7 +32,8 @@
 			return FALSE;
 		}
 		
-		$Data = "\x10\x00\x00\x0A" . Pack( 'a*', $IP ) . Pack( 'n', $Port ) . "\x01";
+		$Length = StrLen( $IP );
+		$Data = Pack( 'cccca*', HexDec( $Length ), 0, 0x04, $Length, $IP ) . Pack( 'nc', $Port, 0x01 );
 		
 		Socket_Send( $Socket, $Data, StrLen( $Data ), 0 ); // handshake
 		Socket_Send( $Socket, "\x01\x00", 2, 0 ); // status ping
