@@ -16,7 +16,7 @@
 	 * Something like this:
 	 *
 	 * $Info = QueryMinecraft( 'localhost' );
-	 * echo '<img src="' . $Info[ 'favicon' ] . '">';
+	 * echo '<img width="64" height="64" src="' . Str_Replace( "\n", "", $Info[ 'favicon' ] ) . '">';
 	 *
 	 */
 	
