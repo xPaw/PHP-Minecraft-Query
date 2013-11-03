@@ -55,9 +55,46 @@
 		
 		Socket_Close( $Socket );
 		
+		$Data = substr(mb_convert_encoding($Data, "UTF-8"), 3);
+		
 		$Data = JSON_Decode( $Data, true );
 		
-		return JSON_Last_Error( ) === JSON_ERROR_NONE ? $Data : FALSE;
+		return verifyJson(JSON_Last_Error( ));
+	}
+	
+	 function verifyJson($last_error)
+	 {
+	 	//Could make this an exception
+	        switch($last_error)
+	        {
+	            case JSON_ERROR_DEPTH:
+	                echo "The maximum stack depth has been exceeded";
+	                break;
+	            case JSON_ERROR_STATE_MISMATCH:
+	                echo "Invalid or malformed JSON";
+	                break;
+	            case JSON_ERROR_CTRL_CHAR:
+	                echo "Control character error, possibly incorrectly encoded";
+	                break;
+	            case JSON_ERROR_SYNTAX:
+	                echo "Syntax error";
+	                break;
+	            case JSON_ERROR_UTF8:
+	                echo "Malformed UTF-8 characters, possibly incorrectly encoded";
+	                break;
+	            case JSON_ERROR_RECURSION:
+	                echo "One or more recursive references in the value to be encoded";
+	                break;
+	            case JSON_ERROR_INF_OR_NAN:
+	                echo "One or more NAN or INF values in the value to be encoded";
+	                break;
+	            case JSON_ERROR_UNSUPPORTED_TYPE:
+	                echo "A value of a type that cannot be encoded was given";
+	                break;
+	            case JSON_ERROR_NONE:
+	                return true;
+	        }
+	        return false;
 	}
 	
 	function _QueryMinecraft_Read_VarInt( $Socket )
