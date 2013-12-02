@@ -22,7 +22,8 @@ class MinecraftPing
 	 * This method can be used to get server-icon.png too.
 	 * Something like this:
 	 *
-	 * $Info = QueryMinecraft( 'localhost' );
+	 * $Server = new MinecraftPing( 'localhost' );
+	 * $Info = $Server->Query();
 	 * echo '<img width="64" height="64" src="' . Str_Replace( "\n", "", $Info[ 'favicon' ] ) . '">';
 	 *
 	 */
