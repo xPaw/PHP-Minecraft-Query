@@ -1,7 +1,7 @@
 <?php
 	// Edit this ->
-	define( 'MQ_SERVER_ADDR', 'localhost' );
-	define( 'MQ_SERVER_PORT', 25566 );
+	define( 'MQ_SERVER_ADDR', 'mc.ecocitycraft.com' );
+	define( 'MQ_SERVER_PORT', 25565 );
 	define( 'MQ_TIMEOUT', 1 );
 	// Edit this <-
 	
@@ -9,19 +9,44 @@
 	Error_Reporting( E_ALL | E_STRICT );
 	Ini_Set( 'display_errors', true );
 	
-	require __DIR__ . '/MinecraftQuery.class.php';
+	require __DIR__ . '/src/xPaw/MinecraftQuery/MinecraftPing.php';
 	
 	$Timer = MicroTime( true );
 	
-	$Query = new MinecraftQuery( );
+	$Info = false;
+	$Query = null;
 	
 	try
 	{
-		$Query->Connect( MQ_SERVER_ADDR, MQ_SERVER_PORT, MQ_TIMEOUT );
+		$Query = new xPaw\MinecraftQuery\MinecraftPing( MQ_SERVER_ADDR, MQ_SERVER_PORT, MQ_TIMEOUT );
+		
+		$Info = $Query->Query( );
+		
+		if( $Info === false )
+		{
+			/*
+			 * If this server is older than 1.7, we can try querying it again using older protocol
+			 * This function returns data in a different format, you will have to manually map
+			 * things yourself if you want to match 1.7's output
+			 *
+			 * If you know for sure that this server is using an older version,
+			 * you then can directly call QueryOldPre17 and avoid Query() and then reconnection part
+			 */
+			
+			$Query->Close( );
+			$Query->Connect( );
+			
+			$Info = $Query->QueryOldPre17( );
+		}
 	}
-	catch( MinecraftQueryException $e )
+	catch( xPaw\MinecraftQuery\MinecraftPingException $e )
 	{
 		$Exception = $e;
+	}
+	
+	if( $Query !== null )
+	{
+		$Query->Close( );
 	}
 	
 	$Timer = Number_Format( MicroTime( true ) - $Timer, 4, '.', '' );
@@ -30,7 +55,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Minecraft Query PHP Class</title>
+	<title>Minecraft Ping PHP Class</title>
 	
 	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
 	<style type="text/css">
@@ -50,7 +75,7 @@
 <body>
     <div class="container">
     	<div class="jumbotron">
-			<h1>Minecraft Query PHP Class</h1>
+			<h1>Minecraft Ping PHP Class</h1>
 			
 			<p>This class was created to query Minecraft servers. It works starting from Minecraft 1.0.</p>
 			
@@ -68,7 +93,6 @@
 		</div>
 <?php else: ?>
 		<div class="row">
-			<div class="col-sm-6">
 				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
@@ -76,12 +100,15 @@
 						</tr>
 					</thead>
 					<tbody>
-<?php if( ( $Info = $Query->GetInfo( ) ) !== false ): ?>
+<?php if( $Info !== false ): ?>
 <?php foreach( $Info as $InfoKey => $InfoValue ): ?>
 						<tr>
 							<td><?php echo htmlspecialchars( $InfoKey ); ?></td>
 							<td><?php
-	if( Is_Array( $InfoValue ) )
+	if( $InfoKey === 'favicon' )
+	{
+		echo '<img width="64" height="64" src="' . Str_Replace( "\n", "", $InfoValue ) . '">';
+	}else if( Is_Array( $InfoValue ) )
 	{
 		echo "<pre>";
 		print_r( $InfoValue );
@@ -101,29 +128,6 @@
 <?php endif; ?>
 					</tbody>
 				</table>
-			</div>
-			<div class="col-sm-6">
-				<table class="table table-bordered table-striped">
-					<thead>
-						<tr>
-							<th>Players</th>
-						</tr>
-					</thead>
-					<tbody>
-<?php if( ( $Players = $Query->GetPlayers( ) ) !== false ): ?>
-<?php foreach( $Players as $Player ): ?>
-						<tr>
-							<td><?php echo htmlspecialchars( $Player ); ?></td>
-						</tr>
-<?php endforeach; ?>
-<?php else: ?>
-						<tr>
-							<td>No players in da house</td>
-						</tr>
-<?php endif; ?>
-					</tbody>
-				</table>
-			</div>
 		</div>
 <?php endif; ?>
 	</div>

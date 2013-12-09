@@ -1,0 +1,6 @@
+{
+    "name": "xpaw/php-minecraft-query",
+    "require": {
+        "php": ">=5.3.0"
+    }
+}

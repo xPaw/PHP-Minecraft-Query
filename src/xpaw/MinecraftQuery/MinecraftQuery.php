@@ -1,5 +1,7 @@
 <?php
-class MinecraftQueryException extends Exception
+namespace xPaw\MinecraftQuery;
+
+class MinecraftQueryException extends \Exception
 {
 	// Exception thrown by MinecraftQuery class
 }
@@ -67,7 +69,7 @@ class MinecraftQuery
 	private function GetChallenge( )
 	{
 		$Data = $this->WriteData( self :: HANDSHAKE );
-		
+
 		if( $Data === false )
 		{
 			throw new MinecraftQueryException( 'Failed to receive challenge.' );
@@ -174,7 +176,7 @@ class MinecraftQuery
 		}
 		
 		$Data = FRead( $this->Socket, 2048 );
-		
+
 		if( $Data === false )
 		{
 			throw new MinecraftQueryException( "Failed to read from socket." );
@@ -184,7 +186,7 @@ class MinecraftQuery
 		{
 			return false;
 		}
-		
+
 		return SubStr( $Data, 5 );
 	}
 }

@@ -1,5 +1,7 @@
 <?php
-class MinecraftPingException extends Exception
+namespace xPaw\MinecraftQuery;
+
+class MinecraftPingException extends \Exception
 {
 	//
 }

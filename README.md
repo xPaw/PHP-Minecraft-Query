@@ -18,9 +18,9 @@ Minecraft implements [Source RCON protocol](https://developer.valvesoftware.com/
 ## Example
 ```php
 <?php
-	require __DIR__ . '/MinecraftQuery.class.php';
+	require __DIR__ . '/src/xPaw/MinecraftQuery/MinecraftQuery.php';
 	
-	$Query = new MinecraftQuery( );
+	$Query = new xPaw\MinecraftQuery\MinecraftQuery( );
 	
 	try
 	{
@@ -29,7 +29,7 @@ Minecraft implements [Source RCON protocol](https://developer.valvesoftware.com/
 		print_r( $Query->GetInfo( ) );
 		print_r( $Query->GetPlayers( ) );
 	}
-	catch( MinecraftQueryException $e )
+	catch( xPaw\MinecraftQuery\MinecraftQueryException $e )
 	{
 		echo $e->getMessage( );
 	}
