@@ -26,8 +26,8 @@ Minecraft implements [Source RCON protocol](https://developer.valvesoftware.com/
 	{
 		$Query->Connect( 'localhost', 25565 );
 
-		print_r( $Query->GetInfo( ) );
-		print_r( $Query->GetPlayers( ) );
+		print_r( $Query->getInfo( ) );
+		print_r( $Query->getPlayers( ) );
 	}
 	catch( xPaw\MinecraftQuery\MinecraftQueryException $e )
 	{
@@ -54,8 +54,8 @@ Minecraft implements [Source RCON protocol](https://developer.valvesoftware.com/
 	{
 		$Query->Connect( 'localhost', 25565 );
 
-		print_r( $Query->GetInfo( ) );
-		print_r( $Query->GetPlayers( ) );
+		print_r( $Query->getInfo( ) );
+		print_r( $Query->getPlayers( ) );
 	}
 	catch( xPaw\MinecraftQuery\MinecraftQueryException $e )
 	{
