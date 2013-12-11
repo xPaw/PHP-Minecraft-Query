@@ -32,9 +32,9 @@ class MinecraftQuery
         Stream_Set_Blocking($this->Socket, true);
 
         try {
-            $Challenge = $this->GetChallenge();
+            $Challenge = $this->getChallenge();
 
-            $this->GetStatus($Challenge);
+            $this->getStatus($Challenge);
         } catch (MinecraftQueryException $e) {
             // We catch this because we want to close the socket, not very elegant
             FClose($this->Socket);
@@ -57,7 +57,7 @@ class MinecraftQuery
 
     private function getChallenge()
     {
-        $Data = $this->WriteData(self :: HANDSHAKE);
+        $Data = $this->writeData(self::HANDSHAKE);
 
         if ($Data === false) {
             throw new MinecraftQueryException('Failed to receive challenge.');
@@ -68,7 +68,7 @@ class MinecraftQuery
 
     private function getStatus($Challenge)
     {
-        $Data = $this->WriteData(self :: STATISTIC, $Challenge . Pack('c*', 0x00, 0x00, 0x00, 0x00));
+        $Data = $this->writeData(self::STATISTIC, $Challenge . Pack('c*', 0x00, 0x00, 0x00, 0x00));
 
         if (!$Data) {
             throw new MinecraftQueryException('Failed to receive status.');

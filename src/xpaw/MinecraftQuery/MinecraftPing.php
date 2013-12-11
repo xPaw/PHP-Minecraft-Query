@@ -35,12 +35,12 @@ class MinecraftPing
         $this->ServerPort = (int) $Port;
         $this->Timeout = (int) $Timeout;
 
-        $this->Connect();
+        $this->connect();
     }
 
     public function __destruct()
     {
-        $this->Close();
+        $this->close();
     }
 
     public function close()
@@ -73,7 +73,7 @@ class MinecraftPing
         Socket_Send($this->Socket, $Data, StrLen($Data), 0); // handshake
         Socket_Send($this->Socket, "\x01\x00", 2, 0); // status ping
 
-        $Length = $this->ReadVarInt(); // full packet length
+        $Length = $this->readVarInt(); // full packet length
 
         if ($Length < 10) {
             return false;
@@ -81,7 +81,7 @@ class MinecraftPing
 
         Socket_Read($this->Socket, 1); // packet type, in server ping it's 0
 
-        $Length = $this->ReadVarInt(); // string length
+        $Length = $this->readVarInt(); // string length
 
         $Data = Socket_Read($this->Socket, $Length, PHP_NORMAL_READ); // and finally the json string
 
