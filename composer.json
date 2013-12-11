@@ -1,6 +1,7 @@
 {
     "name": "xpaw/php-minecraft-query",
     "description": "A Minecraft Server query handler for php",
+    "license": "CC BY-NC-SA 3.0",
     "keywords": ["minecraft"],
     "require": {
         "php": ">=5.3.0"
