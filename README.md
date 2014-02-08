@@ -15,21 +15,49 @@ Look for those settings in **server.properties**:
 ## RCON
 Minecraft implements [Source RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol), so I suggest using [PHP Source Query](https://github.com/xPaw/PHP-Source-Query-Class) library for your RCON needs.
 
-## Example
+## Example (Without Composer)
 ```php
 <?php
-	require __DIR__ . '/MinecraftQuery.class.php';
-	
-	$Query = new MinecraftQuery( );
-	
+	require __DIR__ . '/src/xPaw/MinecraftQuery/MinecraftQuery.php';
+
+	$Query = new xPaw\MinecraftQuery\MinecraftQuery( );
+
 	try
 	{
 		$Query->Connect( 'localhost', 25565 );
-		
-		print_r( $Query->GetInfo( ) );
-		print_r( $Query->GetPlayers( ) );
+
+		print_r( $Query->getInfo( ) );
+		print_r( $Query->getPlayers( ) );
 	}
-	catch( MinecraftQueryException $e )
+	catch( xPaw\MinecraftQuery\MinecraftQueryException $e )
+	{
+		echo $e->getMessage( );
+	}
+?>
+```
+## Example (With Composer)
+```json
+{
+    "name": "acme/blog",
+    "require": {
+        "xpaw/PHP-Minecraft-Query": "dev-master"
+    }
+}
+```
+```php
+<?php
+	require __DIR__ . '/vendor/autoload.php';
+
+	$Query = new xPaw\MinecraftQuery\MinecraftQuery( );
+
+	try
+	{
+		$Query->Connect( 'localhost', 25565 );
+
+		print_r( $Query->getInfo( ) );
+		print_r( $Query->getPlayers( ) );
+	}
+	catch( xPaw\MinecraftQuery\MinecraftQueryException $e )
 	{
 		echo $e->getMessage( );
 	}

@@ -4,26 +4,26 @@
 	define( 'MQ_SERVER_PORT', 25566 );
 	define( 'MQ_TIMEOUT', 1 );
 	// Edit this <-
-	
+
 	// Display everything in browser, because some people can't look in logs for errors
 	Error_Reporting( E_ALL | E_STRICT );
 	Ini_Set( 'display_errors', true );
-	
-	require __DIR__ . '/MinecraftQuery.class.php';
-	
+
+	require __DIR__ . '/src/xPaw/MinecraftQuery/MinecraftQuery.class.php';
+
 	$Timer = MicroTime( true );
-	
-	$Query = new MinecraftQuery( );
-	
+
+	$Query = new xPaw\MinecraftQuery\MinecraftQuery( );
+
 	try
 	{
-		$Query->Connect( MQ_SERVER_ADDR, MQ_SERVER_PORT, MQ_TIMEOUT );
+		$Query->connect( MQ_SERVER_ADDR, MQ_SERVER_PORT, MQ_TIMEOUT );
 	}
-	catch( MinecraftQueryException $e )
+	catch( xPaw\MinecraftQuery\MinecraftQueryException $e )
 	{
 		$Exception = $e;
 	}
-	
+
 	$Timer = Number_Format( MicroTime( true ) - $Timer, 4, '.', '' );
 ?>
 <!DOCTYPE html>
@@ -31,14 +31,14 @@
 <head>
 	<meta charset="utf-8">
 	<title>Minecraft Query PHP Class</title>
-	
+
 	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
 	<style type="text/css">
 		.jumbotron {
 			margin-top: 30px;
 			border-radius: 0;
 		}
-		
+
 		.table thead th {
 			background-color: #428BCA;
 			border-color: #428BCA !important;
@@ -51,9 +51,9 @@
     <div class="container">
     	<div class="jumbotron">
 			<h1>Minecraft Query PHP Class</h1>
-			
+
 			<p>This class was created to query Minecraft servers. It works starting from Minecraft 1.0.</p>
-			
+
 			<p>
 				<a class="btn btn-large btn-primary" href="http://xpaw.ru">Made by xPaw</a>
 				<a class="btn btn-large btn-primary" href="https://github.com/xPaw/PHP-Minecraft-Query">View on GitHub</a>
@@ -76,7 +76,7 @@
 						</tr>
 					</thead>
 					<tbody>
-<?php if( ( $Info = $Query->GetInfo( ) ) !== false ): ?>
+<?php if( ( $Info = $Query->getInfo( ) ) !== false ): ?>
 <?php foreach( $Info as $InfoKey => $InfoValue ): ?>
 						<tr>
 							<td><?php echo htmlspecialchars( $InfoKey ); ?></td>
@@ -110,7 +110,7 @@
 						</tr>
 					</thead>
 					<tbody>
-<?php if( ( $Players = $Query->GetPlayers( ) ) !== false ): ?>
+<?php if( ( $Players = $Query->getPlayers( ) ) !== false ): ?>
 <?php foreach( $Players as $Player ): ?>
 						<tr>
 							<td><?php echo htmlspecialchars( $Player ); ?></td>
