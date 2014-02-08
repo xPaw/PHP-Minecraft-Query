@@ -1,5 +1,5 @@
 <?php
-namespace xpaw\MinecraftQuery;
+namespace xPaw\MinecraftQuery;
 
 /*
  * Queries Minecraft server
