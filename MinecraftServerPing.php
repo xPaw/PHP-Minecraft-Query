@@ -72,8 +72,15 @@ class MinecraftPing
 	
 	public function Query( )
 	{
-		$Length = StrLen( $this->ServerIP );
-		$Data = Pack( 'cccca*', HexDec( $Length ), 0, 0x04, $Length, $this->ServerIP ) . Pack( 'nc', $this->ServerPort, 0x01 );
+		// See http://wiki.vg/Protocol (Status Ping)
+		$Data = "\x00"; // packet ID = 0 (varint)
+		
+		$Data .= "\x04"; // Protocol version (varint)
+		$Data .= Pack( 'c', StrLen( $this->ServerIP ) ) . $this->ServerIP; // Server hostname / IP (varint len + UTF-8 str)
+		$Data .= Pack( 'n', $this->ServerPort ); // Server port (unsigned short)
+		$Data .= "\x01"; // Next state: status (varint)
+		
+		$Data = Pack( 'c', StrLen( $Data ) ) . $Data; // prepend length of packet ID + data
 		
 		Socket_Send( $this->Socket, $Data, StrLen( $Data ), 0 ); // handshake
 		Socket_Send( $this->Socket, "\x01\x00", 2, 0 ); // status ping
