@@ -51,7 +51,7 @@ class MinecraftPing
 	{
 		if( $this->Socket !== null )
 		{
-			Socket_Close( $this->Socket );
+			fclose( $this->Socket );
 			
 			$this->Socket = null;
 		}
@@ -59,15 +59,16 @@ class MinecraftPing
 	
 	public function Connect( )
 	{
-		$this->Socket = Socket_Create( AF_INET, SOCK_STREAM, SOL_TCP );
+		$connectTimeout = $this->Timeout;
+		$this->Socket = @fsockopen( $this->ServerIP, $this->ServerPort, $errno, $errstr, $connectTimeout );
 		
-		Socket_Set_Option( $this->Socket, SOL_SOCKET, SO_SNDTIMEO, array( 'sec' => $this->Timeout, 'usec' => 0 ) );
-		Socket_Set_Option( $this->Socket, SOL_SOCKET, SO_RCVTIMEO, array( 'sec' => $this->Timeout, 'usec' => 0 ) );
-		
-		if( $this->Socket === FALSE || @Socket_Connect( $this->Socket, $this->ServerIP, $this->ServerPort ) === FALSE )
+		if( !$this->Socket )
 		{
 			throw new MinecraftPingException( 'Failed to connect or create a socket' );
 		}
+		
+		// Set Read/Write timeout
+		stream_set_timeout( $this->Socket, $this->Timeout );
 	}
 	
 	public function Query( )
@@ -82,8 +83,8 @@ class MinecraftPing
 		
 		$Data = Pack( 'c', StrLen( $Data ) ) . $Data; // prepend length of packet ID + data
 		
-		Socket_Send( $this->Socket, $Data, StrLen( $Data ), 0 ); // handshake
-		Socket_Send( $this->Socket, "\x01\x00", 2, 0 ); // status ping
+		fwrite( $this->Socket, $Data ); // handshake
+		fwrite( $this->Socket, "\x01\x00" ); // status ping
 		
 		$Length = $this->ReadVarInt( ); // full packet length
 		
@@ -92,11 +93,16 @@ class MinecraftPing
 			return FALSE;
 		}
 		
-		Socket_Read( $this->Socket, 1 ); // packet type, in server ping it's 0
+		fgetc( $this->Socket ); // packet type, in server ping it's 0
 		
 		$Length = $this->ReadVarInt( ); // string length
 		
-		$Data = Socket_Read( $this->Socket, $Length, PHP_NORMAL_READ ); // and finally the json string
+		$Data = "";
+		do
+		{
+			$Remainder = $Length - StrLen( $Data );
+			$Data .= fread( $this->Socket, $Remainder ); // and finally the json string
+		} while( StrLen($Data) < $Length );
 		
 		if( $Data === FALSE )
 		{
@@ -124,8 +130,9 @@ class MinecraftPing
 	
 	public function QueryOldPre17( )
 	{
-		Socket_Send( $this->Socket, "\xFE\x01", 2, 0 );
-		$Len = Socket_Recv( $this->Socket, $Data, 512, 0 );
+		fwrite( $this->Socket, "\xFE\x01" );
+		$Data = fread( $this->Socket, 512 );
+		$Len = StrLen( $Data );
 		
 		if( $Len < 4 || $Data[ 0 ] !== "\xFF" )
 		{
@@ -167,7 +174,7 @@ class MinecraftPing
 		
 		while( true )
 		{
-			$k = @Socket_Read( $this->Socket, 1 );
+			$k = @fgetc( $this->Socket );
 			
 			if( $k === FALSE )
 			{
