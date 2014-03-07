@@ -73,6 +73,8 @@ class MinecraftPing
 	
 	public function Query( )
 	{
+		$TimeStart = microtime(true); // for read timeout purposes
+		
 		// See http://wiki.vg/Protocol (Status Ping)
 		$Data = "\x00"; // packet ID = 0 (varint)
 		
@@ -100,6 +102,11 @@ class MinecraftPing
 		$Data = "";
 		do
 		{
+			if (microtime(true) - $TimeStart > $this->Timeout)
+			{
+				throw new MinecraftPingException( 'Server read timed out' );
+			}
+			
 			$Remainder = $Length - StrLen( $Data );
 			$block = fread( $this->Socket, $Remainder ); // and finally the json string
 			// abort if there is no progress
