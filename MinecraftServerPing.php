@@ -29,13 +29,13 @@ class MinecraftPing
 	 */
 	
 	private $Socket;
-	private $ServerIP;
+	private $ServerAddress;
 	private $ServerPort;
 	private $Timeout;
 	
-	public function __construct( $IP, $Port = 25565, $Timeout = 2 )
+	public function __construct( $Address, $Port = 25565, $Timeout = 2 )
 	{
-		$this->ServerIP = $IP;
+		$this->ServerAddress = $Address;
 		$this->ServerPort = (int)$Port;
 		$this->Timeout = (int)$Timeout;
 		
@@ -60,7 +60,7 @@ class MinecraftPing
 	public function Connect( )
 	{
 		$connectTimeout = $this->Timeout;
-		$this->Socket = @fsockopen( $this->ServerIP, $this->ServerPort, $errno, $errstr, $connectTimeout );
+		$this->Socket = @fsockopen( $this->ServerAddress, $this->ServerPort, $errno, $errstr, $connectTimeout );
 		
 		if( !$this->Socket )
 		{
@@ -77,7 +77,7 @@ class MinecraftPing
 		$Data = "\x00"; // packet ID = 0 (varint)
 		
 		$Data .= "\x04"; // Protocol version (varint)
-		$Data .= Pack( 'c', StrLen( $this->ServerIP ) ) . $this->ServerIP; // Server hostname / IP (varint len + UTF-8 str)
+		$Data .= Pack( 'c', StrLen( $this->ServerAddress ) ) . $this->ServerAddress; // Server (varint len + UTF-8 addr)
 		$Data .= Pack( 'n', $this->ServerPort ); // Server port (unsigned short)
 		$Data .= "\x01"; // Next state: status (varint)
 		
