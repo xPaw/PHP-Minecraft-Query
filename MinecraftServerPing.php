@@ -101,7 +101,14 @@ class MinecraftPing
 		do
 		{
 			$Remainder = $Length - StrLen( $Data );
-			$Data .= fread( $this->Socket, $Remainder ); // and finally the json string
+			$block = fread( $this->Socket, $Remainder ); // and finally the json string
+			// abort if there is no progress
+			if (!$block)
+			{
+				throw new MinecraftPingException( 'Server returned too few data' );
+			}
+			
+			$Data .= $block;
 		} while( StrLen($Data) < $Length );
 		
 		if( $Data === FALSE )
