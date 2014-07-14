@@ -173,7 +173,7 @@ class MinecraftQuery
 			throw new MinecraftQueryException( "Failed to write on socket." );
 		}
 		
-		$Data = FRead( $this->Socket, 2048 );
+		$Data = FRead( $this->Socket, 4096 );
 		
 		if( $Data === false )
 		{
