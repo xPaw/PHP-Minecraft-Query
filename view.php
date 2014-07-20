@@ -55,7 +55,7 @@
 			<p>This class was created to query Minecraft servers. It works starting from Minecraft 1.0.</p>
 			
 			<p>
-				<a class="btn btn-large btn-primary" href="http://xpaw.ru">Made by xPaw</a>
+				<a class="btn btn-large btn-primary" href="http://xpaw.me">Made by xPaw</a>
 				<a class="btn btn-large btn-primary" href="https://github.com/xPaw/PHP-Minecraft-Query">View on GitHub</a>
 				<a class="btn btn-large btn-danger" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a>
 			</p>
