@@ -1,7 +1,7 @@
 <?php
 	// Edit this ->
 	define( 'MQ_SERVER_ADDR', 'localhost' );
-	define( 'MQ_SERVER_PORT', 25566 );
+	define( 'MQ_SERVER_PORT', 25565 );
 	define( 'MQ_TIMEOUT', 1 );
 	// Edit this <-
 	
@@ -113,7 +113,7 @@
 <?php if( ( $Players = $Query->GetPlayers( ) ) !== false ): ?>
 <?php foreach( $Players as $Player ): ?>
 						<tr>
-							<td><?php echo htmlspecialchars( $Player ); ?></td>
+							<td><?php echo '<img src="https://minotar.net/avatar/'. htmlspecialchars( $Player ).'/32.png">    '.htmlspecialchars( $Player ) ; ?></td>
 						</tr>
 <?php endforeach; ?>
 <?php else: ?>
