@@ -113,7 +113,7 @@
 <?php if( ( $Players = $Query->GetPlayers( ) ) !== false ): ?>
 <?php foreach( $Players as $Player ): ?>
 						<tr>
-							<td><?php echo '<img src="https://minotar.net/avatar/'. htmlspecialchars( $Player ).'/32.png">    '.htmlspecialchars( $Player ) ; ?></td>
+							<td><?php echo htmlspecialchars( $Player ); ?></td>
 						</tr>
 <?php endforeach; ?>
 <?php else: ?>
