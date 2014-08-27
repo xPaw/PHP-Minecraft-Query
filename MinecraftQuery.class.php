@@ -111,6 +111,7 @@ class MinecraftQuery
 			'maxplayers' => 'MaxPlayers',
 			'hostport'   => 'HostPort',
 			'hostip'     => 'HostIp'
+			'game_id'    => 'GameName'
 		);
 		
 		foreach( $Data as $Key => $Value )
