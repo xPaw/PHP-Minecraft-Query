@@ -110,7 +110,7 @@ class MinecraftQuery
 			'numplayers' => 'Players',
 			'maxplayers' => 'MaxPlayers',
 			'hostport'   => 'HostPort',
-			'hostip'     => 'HostIp'
+			'hostip'     => 'HostIp',
 			'game_id'    => 'GameName'
 		);
 		
