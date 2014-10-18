@@ -70,7 +70,7 @@ class MinecraftPing
 		
 		if( !$this->Socket )
 		{
-			throw new MinecraftPingException( "Failed to connect or create a socket: $errno ($errstr)" );
+			throw new MinecraftPingException( "Failed to connect or create a socket: (" . socket_last_error($this->Socket) . ")";
 		}
 		
 	}
@@ -99,7 +99,7 @@ class MinecraftPing
 		socket_read( $this->Socket, 1 ); // packet type, in server ping it's 0
 		$Length = $this->ReadVarInt( ); // string length
 		$Data = "";
-		 $status = "Online";
+	 	$status = "Online";
 		do
 		{
 			if (microtime(true) - $TimeStart > $this->Timeout)
