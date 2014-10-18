@@ -1,5 +1,4 @@
 <?php
-define("outip", "192.99.227.0");
 class MinecraftPingException extends Exception
 {
 	//
