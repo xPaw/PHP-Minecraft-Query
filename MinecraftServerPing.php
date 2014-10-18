@@ -1,4 +1,5 @@
 <?php
+define("outip", "192.99.227.0");
 class MinecraftPingException extends Exception
 {
 	//
@@ -32,7 +33,8 @@ class MinecraftPing
 	private $ServerAddress;
 	private $ServerPort;
 	private $Timeout;
-	
+	private $Starttime;
+    private $Endtime;
 	public function __construct( $Address, $Port = 25565, $Timeout = 2 )
 	{
 		$this->ServerAddress = $Address;
@@ -51,7 +53,7 @@ class MinecraftPing
 	{
 		if( $this->Socket !== null )
 		{
-			fclose( $this->Socket );
+			socket_close( $this->Socket );
 			
 			$this->Socket = null;
 		}
@@ -60,15 +62,18 @@ class MinecraftPing
 	public function Connect( )
 	{
 		$connectTimeout = $this->Timeout;
-		$this->Socket = @fsockopen( $this->ServerAddress, $this->ServerPort, $errno, $errstr, $connectTimeout );
+	        $this->Socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+	        socket_set_option($this->Socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => 1, 'usec' => 0));
+	        socket_set_option($this->Socket, SOL_SOCKET, SO_SNDTIMEO, array('sec' => 1, 'usec' => 0));
+	        $this->Starttime = microtime();
+	        socket_connect($this->Socket, $this->ServerAddress, $this->ServerPort);
+	        $this->Endtime = microtime();
 		
 		if( !$this->Socket )
 		{
 			throw new MinecraftPingException( "Failed to connect or create a socket: $errno ($errstr)" );
 		}
 		
-		// Set Read/Write timeout
-		stream_set_timeout( $this->Socket, $this->Timeout );
 	}
 	
 	public function Query( )
@@ -85,8 +90,8 @@ class MinecraftPing
 		
 		$Data = Pack( 'c', StrLen( $Data ) ) . $Data; // prepend length of packet ID + data
 		
-		fwrite( $this->Socket, $Data ); // handshake
-		fwrite( $this->Socket, "\x01\x00" ); // status ping
+		socket_write( $this->Socket, $Data ); // handshake
+		socket_write( $this->Socket, "\x01\x00" ); // status ping
 		
 		$Length = $this->ReadVarInt( ); // full packet length
 		
@@ -95,24 +100,27 @@ class MinecraftPing
 			return FALSE;
 		}
 		
-		fgetc( $this->Socket ); // packet type, in server ping it's 0
+		socket_read( $this->Socket, 1 ); // packet type, in server ping it's 0
 		
 		$Length = $this->ReadVarInt( ); // string length
 		
 		$Data = "";
+        $status = "Online";
 		do
 		{
 			if (microtime(true) - $TimeStart > $this->Timeout)
 			{
 				throw new MinecraftPingException( 'Server read timed out' );
+                $status = "Timed Out";
 			}
 			
 			$Remainder = $Length - StrLen( $Data );
-			$block = fread( $this->Socket, $Remainder ); // and finally the json string
+			$block = socket_read( $this->Socket, $Remainder ); // and finally the json string
 			// abort if there is no progress
 			if (!$block)
 			{
 				throw new MinecraftPingException( 'Server returned too few data' );
+                $status = "Too few data";
 			}
 			
 			$Data .= $block;
@@ -121,6 +129,7 @@ class MinecraftPing
 		if( $Data === FALSE )
 		{
 			throw new MinecraftPingException( 'Server didn\'t return any data' );
+            $status = "No data";
 		}
 		
 		$Data = JSON_Decode( $Data, true );
@@ -138,13 +147,18 @@ class MinecraftPing
 			
 			return FALSE;
 		}
-		
+        $Data["latency"] = round(($this->Endtime - $this->Starttime) * 1000, 2);
+        if($status == null)
+        {
+            $status = "Offline";
+        }
+		$Data["status"] = $status;
 		return $Data;
 	}
 	
 	public function QueryOldPre17( )
 	{
-		fwrite( $this->Socket, "\xFE\x01" );
+		socket_write( $this->Socket, "\xFE\x01" );
 		$Data = fread( $this->Socket, 512 );
 		$Len = StrLen( $Data );
 		
@@ -188,7 +202,7 @@ class MinecraftPing
 		
 		while( true )
 		{
-			$k = @fgetc( $this->Socket );
+			$k = @socket_read( $this->Socket, 1 );
 			
 			if( $k === FALSE )
 			{
