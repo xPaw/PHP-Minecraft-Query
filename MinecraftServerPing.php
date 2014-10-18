@@ -33,7 +33,7 @@ class MinecraftPing
 	private $ServerPort;
 	private $Timeout;
 	private $Starttime;
-    private $Endtime;
+    	private $Endtime;
 	public function __construct( $Address, $Port = 25565, $Timeout = 2 )
 	{
 		$this->ServerAddress = $Address;
@@ -78,10 +78,8 @@ class MinecraftPing
 	public function Query( )
 	{
 		$TimeStart = microtime(true); // for read timeout purposes
-		
 		// See http://wiki.vg/Protocol (Status Ping)
 		$Data = "\x00"; // packet ID = 0 (varint)
-		
 		$Data .= "\x04"; // Protocol version (varint)
 		$Data .= Pack( 'c', StrLen( $this->ServerAddress ) ) . $this->ServerAddress; // Server (varint len + UTF-8 addr)
 		$Data .= Pack( 'n', $this->ServerPort ); // Server port (unsigned short)
@@ -98,28 +96,24 @@ class MinecraftPing
 		{
 			return FALSE;
 		}
-		
 		socket_read( $this->Socket, 1 ); // packet type, in server ping it's 0
-		
 		$Length = $this->ReadVarInt( ); // string length
-		
 		$Data = "";
-        $status = "Online";
+		 $status = "Online";
 		do
 		{
 			if (microtime(true) - $TimeStart > $this->Timeout)
 			{
 				throw new MinecraftPingException( 'Server read timed out' );
-                $status = "Timed Out";
+        			 $status = "Timed Out";
 			}
-			
 			$Remainder = $Length - StrLen( $Data );
 			$block = socket_read( $this->Socket, $Remainder ); // and finally the json string
 			// abort if there is no progress
 			if (!$block)
 			{
 				throw new MinecraftPingException( 'Server returned too few data' );
-                $status = "Too few data";
+				 $status = "Too few data";
 			}
 			
 			$Data .= $block;
@@ -128,7 +122,7 @@ class MinecraftPing
 		if( $Data === FALSE )
 		{
 			throw new MinecraftPingException( 'Server didn\'t return any data' );
-            $status = "No data";
+            		$status = "No data";
 		}
 		
 		$Data = JSON_Decode( $Data, true );
@@ -146,11 +140,11 @@ class MinecraftPing
 			
 			return FALSE;
 		}
-        $Data["latency"] = round(($this->Endtime - $this->Starttime) * 1000, 2);
-        if($status == null)
-        {
-            $status = "Offline";
-        }
+		 $Data["latency"] = round(($this->Endtime - $this->Starttime) * 1000, 2);
+	        if($status == null)
+	        {
+	            $status = "Offline";
+	        }
 		$Data["status"] = $status;
 		return $Data;
 	}
@@ -226,3 +220,5 @@ class MinecraftPing
 		return $i;
 	}
 }
+
+?>
