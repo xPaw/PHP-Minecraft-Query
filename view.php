@@ -1,9 +1,9 @@
 <?php
-	// Edit this ->
-use xPaw\MinecraftQuery;
-use xPaw\MinecraftQueryException;
+	use xPaw\MinecraftQuery;
+	use xPaw\MinecraftQueryException;
 
-define( 'MQ_SERVER_ADDR', 'localhost' );
+	// Edit this ->
+	define( 'MQ_SERVER_ADDR', 'localhost' );
 	define( 'MQ_SERVER_PORT', 25565 );
 	define( 'MQ_TIMEOUT', 1 );
 	// Edit this <-
@@ -12,7 +12,7 @@ define( 'MQ_SERVER_ADDR', 'localhost' );
 	Error_Reporting( E_ALL | E_STRICT );
 	Ini_Set( 'display_errors', true );
 
-	require __DIR__ . '/src/MinecraftQuery.class.php';
+	require __DIR__ . '/src/MinecraftQuery.php';
 
 	$Timer = MicroTime( true );
 

@@ -1,6 +1,6 @@
 <?php
-use xPaw\MinecraftPing;
-use xPaw\MinecraftPingException;
+	use xPaw\MinecraftPing;
+	use xPaw\MinecraftPingException;
 
 	// Edit this ->
 	define( 'MQ_SERVER_ADDR', 'localhost' );
@@ -12,7 +12,7 @@ use xPaw\MinecraftPingException;
 	Error_Reporting( E_ALL | E_STRICT );
 	Ini_Set( 'display_errors', true );
 
-	require __DIR__ . '/src/MinecraftServerPing.php';
+	require __DIR__ . '/src/MinecraftPing.php';
 
 	$Timer = MicroTime( true );
 
