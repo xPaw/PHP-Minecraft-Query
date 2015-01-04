@@ -22,6 +22,7 @@ Minecraft implements [Source RCON protocol](https://developer.valvesoftware.com/
 	require __DIR__ . '/src/MinecraftQueryException.php';
 	
 	use xPaw\MinecraftQuery;
+	use xPaw\MinecraftQueryException;
 	
 	$Query = new MinecraftQuery( );
 	
