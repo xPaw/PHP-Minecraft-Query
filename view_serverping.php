@@ -13,6 +13,7 @@
 	Ini_Set( 'display_errors', true );
 
 	require __DIR__ . '/src/MinecraftPing.php';
+	require __DIR__ . '/src/MinecraftPingException.php';
 
 	$Timer = MicroTime( true );
 
