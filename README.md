@@ -54,11 +54,15 @@ Otherwise you will want to use `MinecraftPing` to get info using the same addres
 	{
 		$Query = new MinecraftPing( 'localhost', 25565 );
 		
-		print_r( $Query->Query( ) );
+		print_r( $Query->Query() );
 	}
 	catch( MinecraftPingException $e )
 	{
-		echo $e->getMessage( );
+		echo $e->getMessage();
+	}
+	finally
+	{
+		$Query->Close();
 	}
 ?>
 ```
