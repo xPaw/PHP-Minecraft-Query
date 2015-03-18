@@ -16,6 +16,7 @@ Look for those settings in **server.properties**:
 Minecraft implements [Source RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol), so I suggest using [PHP Source Query](https://github.com/xPaw/PHP-Source-Query-Class) library for your RCON needs.
 
 ## Example
+If the server has query enabled (`enable-query`, and it requires using a different port), then you can use `MinecraftQuery` to retrieve info about a server.
 ```php
 <?php
 	require __DIR__ . '/src/MinecraftQuery.php';
@@ -39,6 +40,34 @@ Minecraft implements [Source RCON protocol](https://developer.valvesoftware.com/
 	}
 ?>
 ```
+
+Otherwise you will want to use `MinecraftPing` to get info using the same address as you use to connect to the server.
+```php
+<?php
+	require __DIR__ . '/src/MinecraftPing.php';
+	require __DIR__ . '/src/MinecraftPingException.php';
+	
+	use xPaw\MinecraftPing;
+	use xPaw\MinecraftPingException;
+	
+	try
+	{
+		$Query = new MinecraftPing( 'localhost', 25565 );
+		
+		print_r( $Query->Query( ) );
+	}
+	catch( MinecraftPingException $e )
+	{
+		echo $e->getMessage( );
+	}
+?>
+```
+
+If you want to get `ping` info from a server that uses a version older than Minecraft 1.7,
+then use function `QueryOldPre17` instead of `Query`.
+
+Please note that this library does not resolve SRV records, you will need to do that yourself.
+Take a look at [this issue](https://github.com/xPaw/PHP-Minecraft-Query/issues/34) for an example script.
 
 ## License
 > *This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.<br>
