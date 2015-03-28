@@ -156,10 +156,7 @@ class MinecraftQuery
 
 		$this->Info = $Info;
 
-		if( $Players )
-		{
-			$this->Players = Explode( "\x00", $Players );
-		}
+		$this->Players = $Players ? Explode( "\x00", $Players ) : 0;
 	}
 
 	private function WriteData( $Command, $Append = "" )
