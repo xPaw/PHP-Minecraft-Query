@@ -156,7 +156,11 @@ class MinecraftQuery
 
 		$this->Info = $Info;
 
-		if( $Players )
+		if( empty( $Players ) )
+		{
+			$this->Players = null;
+		}
+		else
 		{
 			$this->Players = Explode( "\x00", $Players );
 		}
