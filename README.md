@@ -1,7 +1,6 @@
 # PHP Minecraft Query
 
-## Description
-This class was created to query Minecraft servers.
+This library can be used to query Minecraft servers for some basic information.
 
 ## Differences between Ping and Query
 
