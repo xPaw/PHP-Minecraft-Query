@@ -1,47 +1,29 @@
 # PHP Minecraft Query
 
 ## Description
-This class was created to query Minecraft servers.<br>
-It works starting from **Minecraft 1.0**
+This class was created to query Minecraft servers.
 
-## Instructions
-Before using this class, you need to make sure that your server is running GS4 status listener.
+## Differences between Ping and Query
 
-Look for those settings in **server.properties**:
+There are two methods of retrieving information about a Minecraft server.
+
+### Ping
+Ping protocol was added in Minecraft 1.7 and is used to query the server for minimal amount of information (hostname, motd, icon, and a sample of players). This is easier to use and doesn't require extra setup on server side. It uses TCP protocol on the same port as you would connect to your server.
+
+`MinecraftPing` class contains a method `QueryOldPre17` which can be used to query servers on version 1.6 or older.
+
+### Query
+This method uses GameSpy4 protocol, and requires enabling `query` listener in your `server.properties` like this:
 
 > *enable-query=true*<br>
 > *query.port=25565*
 
+Query allows to request a full list of servers' plugins and players, however this method is more prone to breaking, so if you don't need all this information, stick to the ping method as it's more reliable.
+
 ## RCON
-Minecraft implements [Source RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol), so I suggest using [PHP Source Query](https://github.com/xPaw/PHP-Source-Query-Class) library for your RCON needs.
+It is possible to send console commands to a Minecraft server remotely using the [Source RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol). Use [PHP Source Query](https://github.com/xPaw/PHP-Source-Query-Class) library for your RCON needs.
 
 ## Example
-If the server has query enabled (`enable-query`, and it requires using a different port), then you can use `MinecraftQuery` to retrieve info about a server.
-```php
-<?php
-	require __DIR__ . '/src/MinecraftQuery.php';
-	require __DIR__ . '/src/MinecraftQueryException.php';
-	
-	use xPaw\MinecraftQuery;
-	use xPaw\MinecraftQueryException;
-	
-	$Query = new MinecraftQuery( );
-	
-	try
-	{
-		$Query->Connect( 'localhost', 25565 );
-		
-		print_r( $Query->GetInfo( ) );
-		print_r( $Query->GetPlayers( ) );
-	}
-	catch( MinecraftQueryException $e )
-	{
-		echo $e->getMessage( );
-	}
-?>
-```
-
-Otherwise you will want to use `MinecraftPing` to get info using the same address as you use to connect to the server.
 ```php
 <?php
 	require __DIR__ . '/src/MinecraftPing.php';
@@ -69,6 +51,33 @@ Otherwise you will want to use `MinecraftPing` to get info using the same addres
 
 If you want to get `ping` info from a server that uses a version older than Minecraft 1.7,
 then use function `QueryOldPre17` instead of `Query`.
+
+----
+
+If the server has query enabled (`enable-query`), then you can use `MinecraftQuery` to more retrieve information about a server.
+```php
+<?php
+	require __DIR__ . '/src/MinecraftQuery.php';
+	require __DIR__ . '/src/MinecraftQueryException.php';
+	
+	use xPaw\MinecraftQuery;
+	use xPaw\MinecraftQueryException;
+	
+	$Query = new MinecraftQuery( );
+	
+	try
+	{
+		$Query->Connect( 'localhost', 25565 );
+		
+		print_r( $Query->GetInfo( ) );
+		print_r( $Query->GetPlayers( ) );
+	}
+	catch( MinecraftQueryException $e )
+	{
+		echo $e->getMessage( );
+	}
+?>
+```
 
 Please note that this library does not resolve SRV records, you will need to do that yourself.
 Take a look at [this issue](https://github.com/xPaw/PHP-Minecraft-Query/issues/34) for an example script.
