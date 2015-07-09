@@ -1,12 +1,17 @@
 {
-    "name": "xpaw/php-minecraft-query",
-    "description": "A Minecraft Server query handler for php",
-    "license": "CC BY-NC-SA 3.0",
-    "keywords": ["minecraft"],
-    "require": {
-        "php": ">=5.4"
-    },
-    "autoload": {
-        "psr-4": { "xPaw\\": "src" }
-    }
+	"name": "xpaw/php-minecraft-query",
+	"description": "PHP library to query Minecraft servers",
+	"license": "MIT",
+	"keywords":
+	[
+		"minecraft"
+	],
+	"require":
+	{
+		"php": ">=5.4"
+	},
+	"autoload":
+	{
+		"psr-4": { "xPaw\\": "src" }
+	}
 }
