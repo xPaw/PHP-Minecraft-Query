@@ -1,4 +1,4 @@
-# PHP Minecraft Query
+# PHP Minecraft Query [![Packagist](https://img.shields.io/packagist/dt/xpaw/php-minecraft-query.svg)](https://packagist.org/packages/xpaw/php-minecraft-query)
 
 This library can be used to query Minecraft servers for some basic information.
 
