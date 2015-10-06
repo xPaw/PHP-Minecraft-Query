@@ -2,6 +2,8 @@
 
 This library can be used to query Minecraft servers for some basic information.
 
+**:warning: Please do not create issues when you are unable to retrieve information from a server, unless you can prove that there is a bug within the library.**
+
 ## Differences between Ping and Query
 
 There are two methods of retrieving information about a Minecraft server.
