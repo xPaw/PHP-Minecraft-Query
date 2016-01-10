@@ -61,7 +61,7 @@
 			<p>
 				<a class="btn btn-large btn-primary" href="http://xpaw.me">Made by xPaw</a>
 				<a class="btn btn-large btn-primary" href="https://github.com/xPaw/PHP-Minecraft-Query">View on GitHub</a>
-				<a class="btn btn-large btn-danger" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a>
+				<a class="btn btn-large btn-danger" href="https://github.com/xPaw/PHP-Minecraft-Query/blob/master/LICENSE">MIT license</a>
 			</p>
 		</div>
 
