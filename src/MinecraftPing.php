@@ -31,11 +31,16 @@ class MinecraftPing
 	private $ServerPort;
 	private $Timeout;
 
-	public function __construct( $Address, $Port = 25565, $Timeout = 2 )
+	public function __construct( $Address, $Port = 25565, $Timeout = 2, $SRV = true )
 	{
 		$this->ServerAddress = $Address;
 		$this->ServerPort = (int)$Port;
 		$this->Timeout = (int)$Timeout;
+
+		if ( $SRV )
+		{
+		    $this->ResolveSRV();
+		}
 
 		$this->Connect( );
 	}
@@ -209,5 +214,28 @@ class MinecraftPing
 		}
 
 		return $i;
+	}
+
+	private function ResolveSRV( )
+	{
+	    if ( ip2long($this->ServerAddress) !== FALSE )
+	    {
+		//server address is an ip - we cannot resolve ip
+		return;
+	    }
+
+	    $result = dns_get_record('_minecraft._tcp.' . $this->ServerAddress, DNS_SRV);
+	    if ( count($result) > 0 )
+	    {
+		if ( isset($result[0]['target']) )
+		{
+		    $this->ServerAddress = $result[0]['target'];
+		}
+
+		if ( isset($result[0]['port']) )
+		{
+		    $this->ServerPort = $result[0]['port'];
+		}
+	    }
 	}
 }
