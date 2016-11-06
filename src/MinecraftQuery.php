@@ -18,11 +18,16 @@ class MinecraftQuery
 	private $Players;
 	private $Info;
 
-	public function Connect( $Ip, $Port = 25565, $Timeout = 3 )
+	public function Connect( $Ip, $Port = 25565, $Timeout = 3, $ResolveSRV = true )
 	{
 		if( !is_int( $Timeout ) || $Timeout < 0 )
 		{
 			throw new \InvalidArgumentException( 'Timeout must be an integer.' );
+		}
+
+		if( $ResolveSRV )
+		{
+			$this->ResolveSRV( $Ip, $Port );
 		}
 
 		$this->Socket = @FSockOpen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, $Timeout );
@@ -189,5 +194,25 @@ class MinecraftQuery
 		}
 
 		return SubStr( $Data, 5 );
+	}
+
+	private function ResolveSRV( &$Address, &$Port )
+	{
+		if( ip2long( $Address ) !== false )
+		{
+			return;
+		}
+
+		$Record = dns_get_record( '_minecraft._tcp.' . $Address, DNS_SRV );
+
+		if( empty( $Record ) )
+		{
+			return;
+		}
+
+		if( isset( $Record[ 0 ][ 'target' ] ) )
+		{
+			$Address = $Record[ 0 ][ 'target' ];
+		}
 	}
 }

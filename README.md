@@ -24,6 +24,9 @@ Query allows to request a full list of servers' plugins and players, however thi
 ## RCON
 It is possible to send console commands to a Minecraft server remotely using the [Source RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol). Use [PHP Source Query](https://github.com/xPaw/PHP-Source-Query-Class) library for your RCON needs.
 
+## SRV DNS record
+This library automatically tries to resolve SRV records. If you do not wish to do so, pass `false` as the fourth param in the constructor (after timeout param).
+
 ## Example
 ```php
 <?php
@@ -79,9 +82,6 @@ If the server has query enabled (`enable-query`), then you can use `MinecraftQue
 	}
 ?>
 ```
-
-Please note that this library does not resolve SRV records, you will need to do that yourself.
-Take a look at [this issue](https://github.com/xPaw/PHP-Minecraft-Query/issues/34) for an example script.
 
 ## License
 [MIT](LICENSE)
