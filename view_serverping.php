@@ -61,7 +61,7 @@
 	<meta charset="utf-8">
 	<title>Minecraft Ping PHP Class</title>
 
-	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<style type="text/css">
 		.jumbotron {
 			margin-top: 30px;
@@ -84,7 +84,7 @@
 			<p>This class was created to query Minecraft servers. It works starting from Minecraft 1.0.</p>
 
 			<p>
-				<a class="btn btn-large btn-primary" href="http://xpaw.me">Made by xPaw</a>
+				<a class="btn btn-large btn-primary" href="https://xpaw.me">Made by xPaw</a>
 				<a class="btn btn-large btn-primary" href="https://github.com/xPaw/PHP-Minecraft-Query">View on GitHub</a>
 				<a class="btn btn-large btn-danger" href="https://github.com/xPaw/PHP-Minecraft-Query/blob/master/LICENSE">MIT license</a>
 			</p>
@@ -93,7 +93,7 @@
 <?php if( isset( $Exception ) ): ?>
 		<div class="panel panel-primary">
 			<div class="panel-heading"><?php echo htmlspecialchars( $Exception->getMessage( ) ); ?></div>
-			<p><?php echo nl2br( $e->getTraceAsString(), false ); ?></p>
+			<div class="panel-body"><?php echo nl2br( $e->getTraceAsString(), false ); ?></div>
 		</div>
 <?php else: ?>
 		<div class="row">
