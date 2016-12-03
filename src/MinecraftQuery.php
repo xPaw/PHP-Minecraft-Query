@@ -17,6 +17,7 @@ class MinecraftQuery
 	private $Socket;
 	private $Players;
 	private $Info;
+    private $MaxPlayers;
 
 	public function Connect( $Ip, $Port = 25565, $Timeout = 3, $ResolveSRV = true )
 	{
@@ -66,6 +67,10 @@ class MinecraftQuery
 	{
 		return isset( $this->Players ) ? $this->Players : false;
 	}
+
+    public function GetMaxPlayers() {
+        return isset ( $this->MaxPlayers ) ? $this->MaxPlayers : false;
+    }
 
 	private function GetChallenge( )
 	{
@@ -139,6 +144,7 @@ class MinecraftQuery
 		// Ints
 		$Info[ 'Players' ]    = IntVal( $Info[ 'Players' ] );
 		$Info[ 'MaxPlayers' ] = IntVal( $Info[ 'MaxPlayers' ] );
+        $this->MaxPlayers = IntVal( $Info [ 'MaxPlayers' ] );
 		$Info[ 'HostPort' ]   = IntVal( $Info[ 'HostPort' ] );
 
 		// Parse "plugins", if any
