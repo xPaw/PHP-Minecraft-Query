@@ -48,7 +48,10 @@ This library automatically tries to resolve SRV records. If you do not wish to d
 	}
 	finally
 	{
-		$Query->Close();
+		if( $Query )
+		{
+			$Query->Close();
+		}
 	}
 ?>
 ```
