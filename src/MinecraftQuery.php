@@ -46,15 +46,10 @@ class MinecraftQuery
 
 			$this->GetStatus( $Challenge );
 		}
-		// We catch this because we want to close the socket, not very elegant
-		catch( MinecraftQueryException $e )
+		finally
 		{
 			FClose( $this->Socket );
-
-			throw new MinecraftQueryException( $e->getMessage( ) );
 		}
-
-		FClose( $this->Socket );
 	}
 
 	public function GetInfo( )
