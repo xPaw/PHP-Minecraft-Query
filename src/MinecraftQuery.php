@@ -51,7 +51,7 @@ class MinecraftQuery
 		{
 			FClose( $this->Socket );
 
-			throw new MinecraftQueryException( $e->getMessage( ) );
+			throw $e;
 		}
 
 		FClose( $this->Socket );
