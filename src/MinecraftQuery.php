@@ -52,6 +52,38 @@ class MinecraftQuery
 		}
 	}
 
+	public function ConnectBedrock( $Ip, $Port = 19132, $Timeout = 3, $ResolveSRV = true )
+	{
+		if( !is_int( $Timeout ) || $Timeout < 0 )
+		{
+			throw new \InvalidArgumentException( 'Timeout must be an integer.' );
+		}
+
+		if( $ResolveSRV )
+		{
+			$this->ResolveSRV( $Ip, $Port );
+		}
+
+		$this->Socket = @\fsockopen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, $Timeout );
+
+		if( $ErrNo || $this->Socket === false )
+		{
+			throw new MinecraftQueryException( 'Could not create socket: ' . $ErrStr );
+		}
+
+		\stream_set_timeout( $this->Socket, $Timeout );
+		\stream_set_blocking( $this->Socket, true );
+
+		try
+		{
+			$this->GetBedrockStatus();
+		}
+		finally
+		{
+			FClose( $this->Socket );
+		}
+	}
+
 	public function GetInfo( )
 	{
 		return isset( $this->Info ) ? $this->Info : false;
@@ -164,6 +196,60 @@ class MinecraftQuery
 		{
 			$this->Players = Explode( "\x00", $Players );
 		}
+	}
+
+	private function GetBedrockStatus( )
+	{
+		// hardcoded magic https://github.com/facebookarchive/RakNet/blob/1a169895a900c9fc4841c556e16514182b75faf8/Source/RakPeer.cpp#L135
+		$OFFLINE_MESSAGE_DATA_ID = \pack( 'c*', 0x00, 0xFF, 0xFF, 0x00, 0xFE, 0xFE, 0xFE, 0xFE, 0xFD, 0xFD, 0xFD, 0xFD, 0x12, 0x34, 0x56, 0x78 );
+
+		$Command = \pack( 'cQ', 0x01, time() ); // DefaultMessageIDTypes::ID_UNCONNECTED_PING + 64bit current time
+		$Command .= $OFFLINE_MESSAGE_DATA_ID;
+		$Command .= \pack( 'Q', 2 ); // 64bit guid
+		$Length  = \strlen( $Command );
+
+		if( $Length !== \fwrite( $this->Socket, $Command, $Length ) )
+		{
+			throw new MinecraftQueryException( "Failed to write on socket." );
+		}
+
+		$Data = \fread( $this->Socket, 4096 );
+
+		if( $Data === false )
+		{
+			throw new MinecraftQueryException( "Failed to read from socket." );
+		}
+
+		if( $Data[ 0 ] !== "\x1C" ) // DefaultMessageIDTypes::ID_UNCONNECTED_PONG
+		{
+			throw new MinecraftQueryException( "First byte is not ID_UNCONNECTED_PONG." );
+		}
+
+		if( \substr( $Data, 17, 16 ) !== $OFFLINE_MESSAGE_DATA_ID )
+		{
+			throw new MinecraftQueryException( "Magic bytes do not match." );
+		}
+
+		// TODO: What are the 2 bytes after the magic?
+		$Data = \substr( $Data, 35 );
+
+		// TODO: If server-name contains a ';' it is not escaped, and will break this parsing
+		$Data = \explode( ';', $Data );
+
+		$this->Info =
+		[
+			'GameName'   => $Data[ 0 ],
+			'HostName'   => $Data[ 1 ],
+			'Unknown1'   => $Data[ 2 ], // TODO: What is this?
+			'Version'    => $Data[ 3 ],
+			'Players'    => $Data[ 4 ],
+			'MaxPlayers' => $Data[ 5 ],
+			'Unknown2'   => $Data[ 6 ], // TODO: What is this?
+			'Map'        => $Data[ 7 ],
+			'GameMode'   => $Data[ 8 ],
+			'Unknown3'   => $Data[ 9 ], // TODO: What is this?
+		];
+		$this->Players = null;
 	}
 
 	private function WriteData( $Command, $Append = "" )

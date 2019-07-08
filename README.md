@@ -86,5 +86,7 @@ If the server has query enabled (`enable-query`), then you can use `MinecraftQue
 ?>
 ```
 
+For Bedrock servers (MCPE) use `ConnectBedrock` function instead of `Connect`, then `GetInfo` will work.
+
 ## License
 [MIT](LICENSE)
