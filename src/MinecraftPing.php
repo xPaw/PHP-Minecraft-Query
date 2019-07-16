@@ -225,9 +225,9 @@ class MinecraftPing
 			return;
 		}
 
-		$Record = dns_get_record( '_minecraft._tcp.' . $this->ServerAddress, DNS_SRV );
+		$Record = @dns_get_record( '_minecraft._tcp.' . $this->ServerAddress, DNS_SRV );
 
-		if( empty( $Record ) )
+		if( !$Record || empty( $Record ) )
 		{
 			return;
 		}
