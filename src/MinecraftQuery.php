@@ -284,7 +284,7 @@ class MinecraftQuery
 			return;
 		}
 
-		$Record = dns_get_record( '_minecraft._tcp.' . $Address, DNS_SRV );
+		$Record = @dns_get_record( '_minecraft._tcp.' . $Address, DNS_SRV );
 
 		if( empty( $Record ) )
 		{
