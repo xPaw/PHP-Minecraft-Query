@@ -240,7 +240,7 @@ class MinecraftQuery
 		[
 			'GameName'   => $Data[ 0 ],
 			'HostName'   => $Data[ 1 ],
-			'Unknown1'   => $Data[ 2 ], // TODO: What is this?
+			'Protocol'   => $Data[ 2 ],
 			'Version'    => $Data[ 3 ],
 			'Players'    => $Data[ 4 ],
 			'MaxPlayers' => $Data[ 5 ],
