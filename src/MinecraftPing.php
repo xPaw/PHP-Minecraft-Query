@@ -100,7 +100,7 @@ class MinecraftPing
 			return FALSE;
 		}
 
-		fgetc( $this->Socket ); // packet type, in server ping it's 0
+		$this->ReadVarInt( ); // packet type, in server ping it's 0
 
 		$Length = $this->ReadVarInt( ); // string length
 
