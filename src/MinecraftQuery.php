@@ -244,7 +244,7 @@ class MinecraftQuery
 			'Version'    => $Data[ 3 ],
 			'Players'    => $Data[ 4 ],
 			'MaxPlayers' => $Data[ 5 ],
-			'Unknown2'   => $Data[ 6 ], // TODO: What is this?
+			'ServerId'   => $Data[ 6 ],
 			'Map'        => $Data[ 7 ],
 			'GameMode'   => $Data[ 8 ],
 			'Unknown3'   => $Data[ 9 ], // TODO: What is this?
