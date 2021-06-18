@@ -215,7 +215,7 @@ class MinecraftQuery
 
 		$Data = \fread( $this->Socket, 4096 );
 
-		if( $Data === false )
+		if( $Data === false || !isset( $Data[ 0 ] ) )
 		{
 			throw new MinecraftQueryException( "Failed to read from socket." );
 		}
