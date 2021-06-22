@@ -123,7 +123,7 @@ class MinecraftPing
 			$Data .= $block;
 		} while( StrLen($Data) < $Length );
 
-		if( $Data === FALSE )
+		if( empty( $Data ) )
 		{
 			throw new MinecraftPingException( 'Server didn\'t return any data' );
 		}
