@@ -220,7 +220,7 @@ class MinecraftQuery
 			throw new MinecraftQueryException( "Failed to read from socket." );
 		}
 
-		if( $Data[ 0 ] !== "\x1C" ) // DefaultMessageIDTypes::ID_UNCONNECTED_PONG
+		if( isset($Data[ 0 ]) && $Data[ 0 ] !== "\x1C" ) // DefaultMessageIDTypes::ID_UNCONNECTED_PONG
 		{
 			throw new MinecraftQueryException( "First byte is not ID_UNCONNECTED_PONG." );
 		}
