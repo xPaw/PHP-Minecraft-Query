@@ -238,21 +238,21 @@ class MinecraftQuery
 
 		$this->Info =
 		[
-			'GameName'   => $Data[ 0 ] ?? null,
-			'HostName'   => $Data[ 1 ] ?? null,
-			'Protocol'   => $Data[ 2 ] ?? null,
-			'Version'    => $Data[ 3 ] ?? null,
-			'Players'    => $Data[ 4 ] ?? null,
-			'MaxPlayers' => $Data[ 5 ] ?? null,
-			'ServerId'   => $Data[ 6 ] ?? null,
-			'Map'        => $Data[ 7 ] ?? null,
-			'GameMode'   => $Data[ 8 ] ?? null,
-			'NintendoLimited' => $Data[ 9 ] ?? null,
-			'IPv4Port'   => $Data[ 10 ] ?? null,
-			'IPv6Port'   => $Data[ 11 ] ?? null,
-			'Extra'      => $Data[ 12 ] ?? null, // What is this?
+            'GameName'   => $Data[ 0 ] ?? null,
+            'HostName'   => $Data[ 1 ] ?? null,
+            'Protocol'   => $Data[ 2 ] ?? null,
+            'Version'    => $Data[ 3 ] ?? null,
+            'Players'    => (int) $Data[ 4 ] ?? null,
+            'MaxPlayers' => (int) $Data[ 5 ] ?? null,
+            'ServerId'   => $Data[ 6 ] ?? null,
+            'Map'        => $Data[ 7 ] ?? null,
+            'GameMode'   => $Data[ 8 ] ?? null,
+            'NintendoLimited' => $Data[ 9 ] ?? null,
+            'IPv4Port'   => (int) $Data[ 10 ] ?? null,
+            'IPv6Port'   => (int) $Data[ 11 ] ?? null,
+            'Extra'      => $Data[ 12 ] ?? null, // What is this?
 		];
-		$this->Players = null;
+		$this->Players = null; //How to get player list?
 	}
 
 	private function WriteData( $Command, $Append = "" )
