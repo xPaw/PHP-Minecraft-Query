@@ -30,15 +30,15 @@ class MinecraftQuery
 			$this->ResolveSRV( $Ip, $Port );
 		}
 
-		$this->Socket = @FSockOpen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, $Timeout );
+		$this->Socket = @\fsockopen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, (float)$Timeout );
 
 		if( $ErrNo || $this->Socket === false )
 		{
 			throw new MinecraftQueryException( 'Could not create socket: ' . $ErrStr );
 		}
 
-		Stream_Set_Timeout( $this->Socket, $Timeout );
-		Stream_Set_Blocking( $this->Socket, true );
+		\stream_set_timeout( $this->Socket, $Timeout );
+		\stream_set_blocking( $this->Socket, true );
 
 		try
 		{
@@ -48,7 +48,7 @@ class MinecraftQuery
 		}
 		finally
 		{
-			FClose( $this->Socket );
+			\fclose( $this->Socket );
 		}
 	}
 
@@ -64,7 +64,7 @@ class MinecraftQuery
 			$this->ResolveSRV( $Ip, $Port );
 		}
 
-		$this->Socket = @\fsockopen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, $Timeout );
+		$this->Socket = @\fsockopen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, (float)$Timeout );
 
 		if( $ErrNo || $this->Socket === false )
 		{
@@ -80,7 +80,7 @@ class MinecraftQuery
 		}
 		finally
 		{
-			FClose( $this->Socket );
+			\fclose( $this->Socket );
 		}
 	}
 
@@ -103,12 +103,12 @@ class MinecraftQuery
 			throw new MinecraftQueryException( 'Failed to receive challenge.' );
 		}
 
-		return Pack( 'N', $Data );
+		return \pack( 'N', $Data );
 	}
 
 	private function GetStatus( $Challenge )
 	{
-		$Data = $this->WriteData( self :: STATISTIC, $Challenge . Pack( 'c*', 0x00, 0x00, 0x00, 0x00 ) );
+		$Data = $this->WriteData( self :: STATISTIC, $Challenge . \pack( 'c*', 0x00, 0x00, 0x00, 0x00 ) );
 
 		if( !$Data )
 		{
@@ -118,16 +118,16 @@ class MinecraftQuery
 		$Last = '';
 		$Info = Array( );
 
-		$Data    = SubStr( $Data, 11 ); // splitnum + 2 int
-		$Data    = Explode( "\x00\x00\x01player_\x00\x00", $Data );
+		$Data    = \substr( $Data, 11 ); // splitnum + 2 int
+		$Data    = \explode( "\x00\x00\x01player_\x00\x00", $Data );
 
-		if( Count( $Data ) !== 2 )
+		if( \count( $Data ) !== 2 )
 		{
 			throw new MinecraftQueryException( 'Failed to parse server\'s response.' );
 		}
 
-		$Players = SubStr( $Data[ 1 ], 0, -2 );
-		$Data    = Explode( "\x00", $Data[ 0 ] );
+		$Players = \substr( $Data[ 1 ], 0, -2 );
+		$Data    = \explode( "\x00", $Data[ 0 ] );
 
 		// Array with known keys in order to validate the result
 		// It can happen that server sends custom strings containing bad things (who can know!)
@@ -148,7 +148,7 @@ class MinecraftQuery
 		{
 			if( ~$Key & 1 )
 			{
-				if( !Array_Key_Exists( $Value, $Keys ) )
+				if( !isset( $Keys[ $Value ] ) )
 				{
 					$Last = false;
 					continue;
@@ -159,26 +159,26 @@ class MinecraftQuery
 			}
 			else if( $Last != false )
 			{
-				$Info[ $Last ] = mb_convert_encoding( $Value, 'UTF-8' );
+				$Info[ $Last ] = \mb_convert_encoding( $Value, 'UTF-8' );
 			}
 		}
 
 		// Ints
-		$Info[ 'Players' ]    = IntVal( $Info[ 'Players' ] );
-		$Info[ 'MaxPlayers' ] = IntVal( $Info[ 'MaxPlayers' ] );
-		$Info[ 'HostPort' ]   = IntVal( $Info[ 'HostPort' ] );
+		$Info[ 'Players' ]    = (int)$Info[ 'Players' ];
+		$Info[ 'MaxPlayers' ] = (int)$Info[ 'MaxPlayers' ];
+		$Info[ 'HostPort' ]   = (int)$Info[ 'HostPort' ];
 
 		// Parse "plugins", if any
 		if( $Info[ 'Plugins' ] )
 		{
-			$Data = Explode( ": ", $Info[ 'Plugins' ], 2 );
+			$Data = \explode( ": ", $Info[ 'Plugins' ], 2 );
 
 			$Info[ 'RawPlugins' ] = $Info[ 'Plugins' ];
 			$Info[ 'Software' ]   = $Data[ 0 ];
 
-			if( Count( $Data ) == 2 )
+			if( \count( $Data ) == 2 )
 			{
-				$Info[ 'Plugins' ] = Explode( "; ", $Data[ 1 ] );
+				$Info[ 'Plugins' ] = \explode( "; ", $Data[ 1 ] );
 			}
 		}
 		else
@@ -194,7 +194,7 @@ class MinecraftQuery
 		}
 		else
 		{
-			$this->Players = Explode( "\x00", $Players );
+			$this->Players = \explode( "\x00", $Players );
 		}
 	}
 
@@ -257,37 +257,37 @@ class MinecraftQuery
 
 	private function WriteData( $Command, $Append = "" )
 	{
-		$Command = Pack( 'c*', 0xFE, 0xFD, $Command, 0x01, 0x02, 0x03, 0x04 ) . $Append;
-		$Length  = StrLen( $Command );
+		$Command = \pack( 'c*', 0xFE, 0xFD, $Command, 0x01, 0x02, 0x03, 0x04 ) . $Append;
+		$Length  = \strlen( $Command );
 
-		if( $Length !== FWrite( $this->Socket, $Command, $Length ) )
+		if( $Length !== \fwrite( $this->Socket, $Command, $Length ) )
 		{
 			throw new MinecraftQueryException( "Failed to write on socket." );
 		}
 
-		$Data = FRead( $this->Socket, 4096 );
+		$Data = \fread( $this->Socket, 4096 );
 
 		if( $Data === false )
 		{
 			throw new MinecraftQueryException( "Failed to read from socket." );
 		}
 
-		if( StrLen( $Data ) < 5 || $Data[ 0 ] != $Command[ 2 ] )
+		if( \strlen( $Data ) < 5 || $Data[ 0 ] != $Command[ 2 ] )
 		{
 			return false;
 		}
 
-		return SubStr( $Data, 5 );
+		return \substr( $Data, 5 );
 	}
 
 	private function ResolveSRV( &$Address, &$Port )
 	{
-		if( ip2long( $Address ) !== false )
+		if( \ip2long( $Address ) !== false )
 		{
 			return;
 		}
 
-		$Record = @dns_get_record( '_minecraft._tcp.' . $Address, DNS_SRV );
+		$Record = @\dns_get_record( '_minecraft._tcp.' . $Address, DNS_SRV );
 
 		if( empty( $Record ) )
 		{

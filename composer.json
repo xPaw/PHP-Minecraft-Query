@@ -10,6 +10,10 @@
 	{
 		"php": ">=7.0"
 	},
+	"require-dev":
+	{
+		"phpstan/phpstan": "^1.4"
+	},
 	"autoload":
 	{
 		"psr-4": { "xPaw\\": "src" }
