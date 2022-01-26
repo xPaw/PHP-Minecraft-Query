@@ -242,14 +242,14 @@ class MinecraftQuery
 			'HostName'   => $Data[ 1 ] ?? null,
 			'Protocol'   => $Data[ 2 ] ?? null,
 			'Version'    => $Data[ 3 ] ?? null,
-			'Players'    => $Data[ 4 ] ?? null,
-			'MaxPlayers' => $Data[ 5 ] ?? null,
+			'Players'    => isset( $Data[ 4 ] ) ? (int)$Data[ 4 ] : 0,
+			'MaxPlayers' => isset( $Data[ 5 ] ) ? (int)$Data[ 5 ] : 0,
 			'ServerId'   => $Data[ 6 ] ?? null,
 			'Map'        => $Data[ 7 ] ?? null,
 			'GameMode'   => $Data[ 8 ] ?? null,
 			'NintendoLimited' => $Data[ 9 ] ?? null,
-			'IPv4Port'   => $Data[ 10 ] ?? null,
-			'IPv6Port'   => $Data[ 11 ] ?? null,
+			'IPv4Port'   => isset( $Data[ 10 ] ) ? (int)$Data[ 10 ] : 0,
+			'IPv6Port'   => isset( $Data[ 11 ] ) ? (int)$Data[ 11 ] : 0,
 			'Extra'      => $Data[ 12 ] ?? null, // What is this?
 		];
 		$this->Players = null;
