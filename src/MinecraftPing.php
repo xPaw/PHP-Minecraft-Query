@@ -82,7 +82,7 @@ class MinecraftPing
 		// See http://wiki.vg/Protocol (Status Ping)
 		$Data = "\x00"; // packet ID = 0 (varint)
 
-		$Data .= "\x04"; // Protocol version (varint)
+		$Data .= "\xff\xff\xff\xff\x0f"; // Protocol version (varint)
 		$Data .= \pack( 'c', \strlen( $this->ServerAddress ) ) . $this->ServerAddress; // Server (varint len + UTF-8 addr)
 		$Data .= \pack( 'n', $this->ServerPort ); // Server port (unsigned short)
 		$Data .= "\x01"; // Next state: status (varint)
