@@ -12,7 +12,8 @@
 	},
 	"require-dev":
 	{
-		"phpstan/phpstan": "^1.4"
+		"phpstan/phpstan": "^1.10",
+		"vimeo/psalm": "^5.16"
 	},
 	"autoload":
 	{
