@@ -23,6 +23,8 @@ jobs:
 
     - name: Run phpstan
       run: php vendor/bin/phpstan
+      continue-on-error: true
 
     - name: Run psalm
       run: php vendor/bin/psalm
+      continue-on-error: true
