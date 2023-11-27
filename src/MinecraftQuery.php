@@ -298,5 +298,10 @@ class MinecraftQuery
 		{
 			$Address = $Record[ 0 ][ 'target' ];
 		}
+
+		if( isset( $Record[ 0 ][ 'port' ] ) )
+		{
+			$Port = $Record[ 0 ][ 'port' ];
+		}
 	}
 }
