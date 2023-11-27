@@ -26,16 +26,22 @@ class MinecraftPing
 	 *
 	 */
 
+	/** @var ?resource $Socket */
 	private $Socket;
-	private $ServerAddress;
-	private $ServerPort;
-	private $Timeout;
+	private string $ServerAddress;
+	private int $ServerPort;
+	private float $Timeout;
 
-	public function __construct( $Address, $Port = 25565, $Timeout = 2, $ResolveSRV = true )
+	public function __construct( string $Address, int $Port = 25565, float $Timeout = 2, bool $ResolveSRV = true )
 	{
+		if( $Timeout < 0 )
+		{
+			throw new \InvalidArgumentException( 'Timeout must be a positive integer.' );
+		}
+
 		$this->ServerAddress = $Address;
-		$this->ServerPort = (int)$Port;
-		$this->Timeout = (int)$Timeout;
+		$this->ServerPort = $Port;
+		$this->Timeout = $Timeout;
 
 		if( $ResolveSRV )
 		{
@@ -50,7 +56,7 @@ class MinecraftPing
 		$this->Close( );
 	}
 
-	public function Close( )
+	public function Close( ) : void
 	{
 		if( $this->Socket !== null )
 		{
@@ -60,23 +66,29 @@ class MinecraftPing
 		}
 	}
 
-	public function Connect( )
+	public function Connect( ) : void
 	{
-		$this->Socket = @\fsockopen( $this->ServerAddress, $this->ServerPort, $errno, $errstr, (float)$this->Timeout );
+		$Socket = @\fsockopen( $this->ServerAddress, $this->ServerPort, $errno, $errstr, $this->Timeout );
 
-		if( !$this->Socket )
+		if( $Socket === false )
 		{
-			$this->Socket = null;
-
 			throw new MinecraftPingException( "Failed to connect or create a socket: $errno ($errstr)" );
 		}
 
+		$this->Socket = $Socket;
+
 		// Set Read/Write timeout
-		\stream_set_timeout( $this->Socket, $this->Timeout );
+		\stream_set_timeout( $this->Socket, (int)$this->Timeout );
 	}
 
-	public function Query( )
+	/** @return array|false */
+	public function Query( ) : array|bool
 	{
+		if( $this->Socket === null )
+		{
+			throw new MinecraftPingException( 'Socket is not open.' );
+		}
+
 		$TimeStart = \microtime( true ); // for read timeout purposes
 
 		// See http://wiki.vg/Protocol (Status Ping)
@@ -95,7 +107,7 @@ class MinecraftPing
 
 		if( $Length < 10 )
 		{
-			return FALSE;
+			return false;
 		}
 
 		$this->ReadVarInt( ); // packet type, in server ping it's 0
@@ -104,7 +116,7 @@ class MinecraftPing
 
 		if( $Length < 2 )
 		{
-			return FALSE;
+			return false;
 		}
 
 		$Data = "";
@@ -116,6 +128,12 @@ class MinecraftPing
 			}
 
 			$Remainder = $Length - \strlen( $Data );
+
+			if( $Remainder <= 0 )
+			{
+				break;
+			}
+
 			$block = \fread( $this->Socket, $Remainder ); // and finally the json string
 			// abort if there is no progress
 			if( !$block )
@@ -133,22 +151,44 @@ class MinecraftPing
 			throw new MinecraftPingException( 'JSON parsing failed: ' . \json_last_error_msg( ) );
 		}
 
+		if( !\is_array( $Data ) )
+		{
+			return false;
+		}
+
 		return $Data;
 	}
 
-	public function QueryOldPre17( )
+	/** @return array|false */
+	public function QueryOldPre17( ) : array|bool
 	{
+		if( $this->Socket === null )
+		{
+			throw new MinecraftPingException( 'Socket is not open.' );
+		}
+
 		\fwrite( $this->Socket, "\xFE\x01" );
 		$Data = \fread( $this->Socket, 512 );
+
+		if( empty( $Data ) )
+		{
+			return false;
+		}
+
 		$Len = \strlen( $Data );
 
 		if( $Len < 4 || $Data[ 0 ] !== "\xFF" )
 		{
-			return FALSE;
+			return false;
 		}
 
 		$Data = \substr( $Data, 3 ); // Strip packet header (kick message packet and short length)
 		$Data = \iconv( 'UTF-16BE', 'UTF-8', $Data );
+
+		if( $Data === false )
+		{
+			return false;
+		}
 
 		// Are we dealing with Minecraft 1.4+ server?
 		if( $Data[ 1 ] === "\xA7" && $Data[ 2 ] === "\x31" )
@@ -175,7 +215,7 @@ class MinecraftPing
 		);
 	}
 
-	private function ReadVarInt( )
+	private function ReadVarInt( ) : int
 	{
 		$i = 0;
 		$j = 0;
@@ -207,7 +247,7 @@ class MinecraftPing
 		return $i;
 	}
 
-	private function ResolveSRV()
+	private function ResolveSRV() : void
 	{
 		if( \ip2long( $this->ServerAddress ) !== false )
 		{
@@ -228,7 +268,7 @@ class MinecraftPing
 
 		if( isset( $Record[ 0 ][ 'port' ] ) )
 		{
-			$this->ServerPort = $Record[ 0 ][ 'port' ];
+			$this->ServerPort = (int)$Record[ 0 ][ 'port' ];
 		}
 	}
 }

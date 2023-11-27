@@ -14,15 +14,16 @@ class MinecraftQuery
 	const STATISTIC = 0x00;
 	const HANDSHAKE = 0x09;
 
+	/** @var ?resource $Socket */
 	private $Socket;
-	private $Players;
-	private $Info;
+	private ?array $Players = null;
+	private ?array $Info = null;
 
-	public function Connect( $Ip, $Port = 25565, $Timeout = 3, $ResolveSRV = true )
+	public function Connect( string $Ip, int $Port = 25565, float $Timeout = 3, bool $ResolveSRV = true ) : void
 	{
-		if( !is_int( $Timeout ) || $Timeout < 0 )
+		if( $Timeout < 0 )
 		{
-			throw new \InvalidArgumentException( 'Timeout must be an integer.' );
+			throw new \InvalidArgumentException( 'Timeout must be a positive integer.' );
 		}
 
 		if( $ResolveSRV )
@@ -30,14 +31,16 @@ class MinecraftQuery
 			$this->ResolveSRV( $Ip, $Port );
 		}
 
-		$this->Socket = @\fsockopen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, (float)$Timeout );
+		$Socket = @\fsockopen( 'udp://' . $Ip, $Port, $ErrNo, $ErrStr, $Timeout );
 
-		if( $ErrNo || $this->Socket === false )
+		if( $ErrNo || $Socket === false )
 		{
 			throw new MinecraftQueryException( 'Could not create socket: ' . $ErrStr );
 		}
 
-		\stream_set_timeout( $this->Socket, $Timeout );
+		$this->Socket = $Socket;
+
+		\stream_set_timeout( $this->Socket, (int)$Timeout );
 		\stream_set_blocking( $this->Socket, true );
 
 		try
@@ -48,13 +51,13 @@ class MinecraftQuery
 		}
 		finally
 		{
-			\fclose( $this->Socket );
+			\fclose( $Socket );
 		}
 	}
 
-	public function ConnectBedrock( $Ip, $Port = 19132, $Timeout = 3, $ResolveSRV = true )
+	public function ConnectBedrock( string $Ip, int $Port = 19132, float $Timeout = 3, bool $ResolveSRV = true ) : void
 	{
-		if( !is_int( $Timeout ) || $Timeout < 0 )
+		if( $Timeout < 0 )
 		{
 			throw new \InvalidArgumentException( 'Timeout must be an integer.' );
 		}
@@ -64,14 +67,16 @@ class MinecraftQuery
 			$this->ResolveSRV( $Ip, $Port );
 		}
 
-		$this->Socket = @\fsockopen( 'udp://' . $Ip, (int)$Port, $ErrNo, $ErrStr, (float)$Timeout );
+		$Socket = @\fsockopen( 'udp://' . $Ip, $Port, $ErrNo, $ErrStr, $Timeout );
 
-		if( $ErrNo || $this->Socket === false )
+		if( $ErrNo || $Socket === false )
 		{
 			throw new MinecraftQueryException( 'Could not create socket: ' . $ErrStr );
 		}
 
-		\stream_set_timeout( $this->Socket, $Timeout );
+		$this->Socket = $Socket;
+
+		\stream_set_timeout( $this->Socket, (int)$Timeout );
 		\stream_set_blocking( $this->Socket, true );
 
 		try
@@ -80,23 +85,25 @@ class MinecraftQuery
 		}
 		finally
 		{
-			\fclose( $this->Socket );
+			\fclose( $Socket );
 		}
 	}
 
-	public function GetInfo( )
+	/** @return array|false */
+	public function GetInfo( ) : array|bool
 	{
 		return isset( $this->Info ) ? $this->Info : false;
 	}
 
-	public function GetPlayers( )
+	/** @return array|false */
+	public function GetPlayers( ) : array|bool
 	{
 		return isset( $this->Players ) ? $this->Players : false;
 	}
 
-	private function GetChallenge( )
+	private function GetChallenge( ) : string
 	{
-		$Data = $this->WriteData( self :: HANDSHAKE );
+		$Data = $this->WriteData( self::HANDSHAKE );
 
 		if( $Data === false )
 		{
@@ -106,9 +113,9 @@ class MinecraftQuery
 		return \pack( 'N', $Data );
 	}
 
-	private function GetStatus( $Challenge )
+	private function GetStatus( string $Challenge ) : void
 	{
-		$Data = $this->WriteData( self :: STATISTIC, $Challenge . \pack( 'c*', 0x00, 0x00, 0x00, 0x00 ) );
+		$Data = $this->WriteData( self::STATISTIC, $Challenge . \pack( 'c*', 0x00, 0x00, 0x00, 0x00 ) );
 
 		if( !$Data )
 		{
@@ -198,8 +205,13 @@ class MinecraftQuery
 		}
 	}
 
-	private function GetBedrockStatus( )
+	private function GetBedrockStatus( ) : void
 	{
+		if( $this->Socket === null )
+		{
+			throw new MinecraftQueryException( 'Socket is not open.' );
+		}
+
 		// hardcoded magic https://github.com/facebookarchive/RakNet/blob/1a169895a900c9fc4841c556e16514182b75faf8/Source/RakPeer.cpp#L135
 		$OFFLINE_MESSAGE_DATA_ID = \pack( 'c*', 0x00, 0xFF, 0xFF, 0x00, 0xFE, 0xFE, 0xFE, 0xFE, 0xFD, 0xFD, 0xFD, 0xFD, 0x12, 0x34, 0x56, 0x78 );
 
@@ -255,8 +267,14 @@ class MinecraftQuery
 		$this->Players = null;
 	}
 
-	private function WriteData( $Command, $Append = "" )
+	/** @return string|false */
+	private function WriteData( int $Command, string $Append = "" ) : string|bool
 	{
+		if( $this->Socket === null )
+		{
+			throw new MinecraftQueryException( 'Socket is not open.' );
+		}
+
 		$Command = \pack( 'c*', 0xFE, 0xFD, $Command, 0x01, 0x02, 0x03, 0x04 ) . $Append;
 		$Length  = \strlen( $Command );
 
@@ -280,7 +298,7 @@ class MinecraftQuery
 		return \substr( $Data, 5 );
 	}
 
-	private function ResolveSRV( &$Address, &$Port )
+	private function ResolveSRV( string &$Address, int &$Port ) : void
 	{
 		if( \ip2long( $Address ) !== false )
 		{
@@ -301,7 +319,7 @@ class MinecraftQuery
 
 		if( isset( $Record[ 0 ][ 'port' ] ) )
 		{
-			$Port = $Record[ 0 ][ 'port' ];
+			$Port = (int)$Record[ 0 ][ 'port' ];
 		}
 	}
 }

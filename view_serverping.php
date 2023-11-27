@@ -9,13 +9,13 @@
 	// Edit this <-
 
 	// Display everything in browser, because some people can't look in logs for errors
-	Error_Reporting( E_ALL | E_STRICT );
-	Ini_Set( 'display_errors', true );
+	error_reporting( E_ALL | E_STRICT );
+	ini_set( 'display_errors', true );
 
 	require __DIR__ . '/src/MinecraftPing.php';
 	require __DIR__ . '/src/MinecraftPingException.php';
 
-	$Timer = MicroTime( true );
+	$Timer = microtime( true );
 
 	$Info = false;
 	$Query = null;
@@ -53,7 +53,7 @@
 		$Query->Close( );
 	}
 
-	$Timer = Number_Format( MicroTime( true ) - $Timer, 4, '.', '' );
+	$Timer = number_format( microtime( true ) - $Timer, 4, '.', '' );
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -93,7 +93,7 @@
 <?php if( isset( $Exception ) ): ?>
 		<div class="panel panel-primary">
 			<div class="panel-heading"><?php echo htmlspecialchars( $Exception->getMessage( ) ); ?></div>
-			<div class="panel-body"><?php echo nl2br( $e->getTraceAsString(), false ); ?></div>
+			<div class="panel-body"><?php echo nl2br( $Exception->getTraceAsString(), false ); ?></div>
 		</div>
 <?php else: ?>
 		<div class="row">
@@ -111,8 +111,9 @@
 							<td><?php
 	if( $InfoKey === 'favicon' )
 	{
-		echo '<img width="64" height="64" src="' . Str_Replace( "\n", "", $InfoValue ) . '">';
-	}else if( Is_Array( $InfoValue ) )
+		echo '<img width="64" height="64" src="' . str_replace( "\n", "", $InfoValue ) . '">';
+	}
+	else if( is_array( $InfoValue ) )
 	{
 		echo "<pre>";
 		print_r( $InfoValue );
