@@ -102,6 +102,11 @@ class MinecraftPing
 
 		$Length = $this->ReadVarInt( ); // string length
 
+		if( $Length < 2 )
+		{
+			return FALSE;
+		}
+
 		$Data = "";
 		while( \strlen( $Data ) < $Length )
 		{
