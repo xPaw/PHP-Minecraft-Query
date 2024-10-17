@@ -248,26 +248,29 @@ class MinecraftQuery
 
 		// TODO: What are the 2 bytes after the magic?
 		$Data = \substr( $Data, 35 );
-
-		// TODO: If server-name contains a ';' it is not escaped, and will break this parsing
 		$Data = \explode( ';', $Data );
-
-		$this->Info =
-		[
+		$offset = \count($data) - 13;
+		$Info = [
 			'GameName'   => $Data[ 0 ] ?? null,
-			'HostName'   => $Data[ 1 ] ?? null,
-			'Protocol'   => $Data[ 2 ] ?? null,
-			'Version'    => $Data[ 3 ] ?? null,
-			'Players'    => isset( $Data[ 4 ] ) ? (int)$Data[ 4 ] : 0,
-			'MaxPlayers' => isset( $Data[ 5 ] ) ? (int)$Data[ 5 ] : 0,
-			'ServerId'   => $Data[ 6 ] ?? null,
-			'Map'        => $Data[ 7 ] ?? null,
-			'GameMode'   => $Data[ 8 ] ?? null,
-			'NintendoLimited' => $Data[ 9 ] ?? null,
-			'IPv4Port'   => isset( $Data[ 10 ] ) ? (int)$Data[ 10 ] : 0,
-			'IPv6Port'   => isset( $Data[ 11 ] ) ? (int)$Data[ 11 ] : 0,
-			'Extra'      => $Data[ 12 ] ?? null, // What is this?
+			'HostName'   => [],
+			'Protocol'   => $Data[ 2+$offset ] ?? null,
+			'Version'    => $Data[ 3+$offset ] ?? null,
+			'Players'    => isset( $Data[ 4+$offset ] ) ? (int)$Data[ 4+$offset ] : 0,
+			'MaxPlayers' => isset( $Data[ 5+$offset ] ) ? (int)$Data[ 5+$offset ] : 0,
+			'ServerId'   => $Data[ 6+$offset ] ?? null,
+			'Map'        => $Data[ 7+$offset ] ?? null,
+			'GameMode'   => $Data[ 8+$offset ] ?? null,
+			'NintendoLimited' => $Data[ 9+$offset ] ?? null,
+			'IPv4Port'   => isset( $Data[ 10+$offset ] ) ? (int)$Data[ 10+$offset ] : 0,
+			'IPv6Port'   => isset( $Data[ 11+$offset ] ) ? (int)$Data[ 11+$offset ] : 0,
+			'Extra'      => $Data[ 12+$offset ] ?? null, // What is this?
 		];
+		
+		for ($i = 0; $i <= $offset; $i++)
+			$Info['HostName'][] = $Data[ 1+$i ];
+		
+		$Info['HostName'] = implode( ';', $Info['HostName'] );
+		$this->Info = $Info;
 		$this->Players = null;
 	}
 
