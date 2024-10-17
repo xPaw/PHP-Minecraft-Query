@@ -166,7 +166,7 @@ class MinecraftQuery
 			}
 			else if( $Last != false )
 			{
-				$Info[ $Last ] = \mb_convert_encoding( $Value, 'UTF-8' );
+				$Info[ $Last ] = \mb_convert_encoding( $Value, 'UTF-8', 'ISO-8859-1' );
 			}
 		}
 
