@@ -2,6 +2,13 @@
 	"name": "xpaw/php-minecraft-query",
 	"description": "PHP library to query Minecraft servers",
 	"license": "MIT",
+	"funding":
+	[
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/xPaw"
+        }
+	],
 	"keywords":
 	[
 		"minecraft"
