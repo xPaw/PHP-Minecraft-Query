@@ -189,7 +189,7 @@ class MinecraftQuery
 			}
 			else
 			{
-				$Info[ 'Plugins' ] = '';
+				$Info[ 'Plugins' ] = [];
 			}
 		}
 		else
