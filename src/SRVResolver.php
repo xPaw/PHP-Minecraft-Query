@@ -1,9 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace xPaw;
 
 class SRVResolver
 {
+	/**
+	 * @param-out string $Address
+	 * @param-out int $Port
+	 */
 	public static function Resolve( string &$Address, int &$Port ) : void
 	{
 		if( @\inet_pton( $Address ) !== false )
@@ -18,6 +23,7 @@ class SRVResolver
 			return;
 		}
 
+		/** @var array{pri: int, weight: int, target: string, port: int}[] $Records */
 		\usort( $Records, static function( array $a, array $b ) : int
 		{
 			if( $a[ 'pri' ] !== $b[ 'pri' ] )
@@ -30,10 +36,7 @@ class SRVResolver
 
 		$Record = $Records[ 0 ];
 
-		if( isset( $Record[ 'target' ], $Record[ 'port' ] ) )
-		{
-			$Address = $Record[ 'target' ];
-			$Port = (int)$Record[ 'port' ];
-		}
+		$Address = $Record[ 'target' ];
+		$Port = $Record[ 'port' ];
 	}
 }

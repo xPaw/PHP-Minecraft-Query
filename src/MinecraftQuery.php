@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace xPaw;
 
@@ -16,7 +17,9 @@ class MinecraftQuery
 
 	/** @var ?resource $Socket */
 	private $Socket;
+	/** @var ?list<string> */
 	private ?array $Players = null;
+	/** @var ?array<string, mixed> */
 	private ?array $Info = null;
 
 	public function Connect( string $Ip, int $Port = 25565, float $Timeout = 3, bool $ResolveSRV = true ) : void
@@ -40,7 +43,7 @@ class MinecraftQuery
 
 		$this->Socket = $Socket;
 
-		\stream_set_timeout( $this->Socket, (int)$Timeout );
+		\stream_set_timeout( $this->Socket, (int)$Timeout, (int)(($Timeout - \floor( $Timeout )) * 1000000.0) );
 		\stream_set_blocking( $this->Socket, true );
 
 		try
@@ -76,7 +79,7 @@ class MinecraftQuery
 
 		$this->Socket = $Socket;
 
-		\stream_set_timeout( $this->Socket, (int)$Timeout );
+		\stream_set_timeout( $this->Socket, (int)$Timeout, (int)(($Timeout - \floor( $Timeout )) * 1000000.0) );
 		\stream_set_blocking( $this->Socket, true );
 
 		try
@@ -89,13 +92,13 @@ class MinecraftQuery
 		}
 	}
 
-	/** @return array|false */
+	/** @return array<string, mixed>|false */
 	public function GetInfo( ) : array|bool
 	{
 		return isset( $this->Info ) ? $this->Info : false;
 	}
 
-	/** @return array|false */
+	/** @return list<string>|false */
 	public function GetPlayers( ) : array|bool
 	{
 		return isset( $this->Players ) ? $this->Players : false;
@@ -178,7 +181,7 @@ class MinecraftQuery
 		// Parse "plugins", if any
 		if( isset( $Info[ 'Plugins' ] ) )
 		{
-			$Data = \explode( ": ", $Info[ 'Plugins' ], 2 );
+			$Data = \explode( ": ", (string)$Info[ 'Plugins' ], 2 );
 
 			$Info[ 'RawPlugins' ] = $Info[ 'Plugins' ];
 			$Info[ 'Software' ]   = $Data[ 0 ];
@@ -254,7 +257,7 @@ class MinecraftQuery
 
 		$this->Info =
 		[
-			'GameName'   => $Data[ 0 ] ?? null,
+			'GameName'   => $Data[ 0 ],
 			'HostName'   => $Data[ 1 ] ?? null,
 			'Protocol'   => $Data[ 2 ] ?? null,
 			'Version'    => $Data[ 3 ] ?? null,
@@ -301,5 +304,4 @@ class MinecraftQuery
 
 		return \substr( $Data, 5 );
 	}
-
 }

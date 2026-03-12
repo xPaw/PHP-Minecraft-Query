@@ -23,9 +23,9 @@
 	{
 		$Query->Connect( MQ_SERVER_ADDR, MQ_SERVER_PORT, MQ_TIMEOUT );
 	}
-	catch( MinecraftQueryException $e )
+	catch( MinecraftQueryException $Exception )
 	{
-		$Exception = $e;
+		// $Exception is used below
 	}
 
 	$Timer = number_format( microtime( true ) - $Timer, 4, '.', '' );
@@ -65,7 +65,7 @@
 			</p>
 		</div>
 
-<?php if( isset( $Exception ) ): ?>
+<?php if( isset( $Exception ) && $Exception instanceof Exception ): ?>
 		<div class="panel panel-primary">
 			<div class="panel-heading"><?php echo htmlspecialchars( $Exception->getMessage( ) ); ?></div>
 			<div class="panel-body"><?php echo nl2br( $Exception->getTraceAsString(), false ); ?></div>
@@ -91,9 +91,9 @@
 		print_r( $InfoValue );
 		echo "</pre>";
 	}
-	else
+	else if( is_string( $InfoValue ) || is_int( $InfoValue ) )
 	{
-		echo htmlspecialchars( $InfoValue );
+		echo htmlspecialchars( (string)$InfoValue );
 	}
 ?></td>
 						</tr>

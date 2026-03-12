@@ -43,9 +43,9 @@
 			$Info = $Query->QueryOldPre17( );
 		}
 	}
-	catch( MinecraftPingException $e )
+	catch( MinecraftPingException $Exception )
 	{
-		$Exception = $e;
+		// $Exception is used below
 	}
 
 	if( $Query !== null )
@@ -90,7 +90,7 @@
 			</p>
 		</div>
 
-<?php if( isset( $Exception ) ): ?>
+<?php if( isset( $Exception ) && $Exception instanceof Exception ): ?>
 		<div class="panel panel-primary">
 			<div class="panel-heading"><?php echo htmlspecialchars( $Exception->getMessage( ) ); ?></div>
 			<div class="panel-body"><?php echo nl2br( $Exception->getTraceAsString(), false ); ?></div>
@@ -109,7 +109,7 @@
 						<tr>
 							<td><?php echo htmlspecialchars( $InfoKey ); ?></td>
 							<td><?php
-	if( $InfoKey === 'favicon' )
+	if( $InfoKey === 'favicon' && is_string( $InfoValue ) )
 	{
 		echo '<img width="64" height="64" src="' . str_replace( "\n", "", $InfoValue ) . '">';
 	}
@@ -119,9 +119,9 @@
 		print_r( $InfoValue );
 		echo "</pre>";
 	}
-	else
+	else if( is_string( $InfoValue ) || is_int( $InfoValue ) )
 	{
-		echo htmlspecialchars( $InfoValue );
+		echo htmlspecialchars( (string)$InfoValue );
 	}
 ?></td>
 						</tr>

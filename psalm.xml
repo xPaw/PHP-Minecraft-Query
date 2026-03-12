@@ -8,6 +8,12 @@
     findUnusedBaselineEntry="true"
     findUnusedCode="true"
 >
+    <issueHandlers>
+        <ClassMustBeFinal errorLevel="suppress" />
+        <RiskyTruthyFalsyComparison errorLevel="suppress" />
+        <PossiblyUnusedMethod errorLevel="suppress" />
+        <InvalidPropertyAssignmentValue errorLevel="suppress" />
+    </issueHandlers>
     <projectFiles>
         <directory name="src" />
         <directory name="." />

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace xPaw;
 
@@ -60,9 +61,9 @@ class MinecraftPing
 	{
 		if( $this->Socket !== null )
 		{
-			\fclose( $this->Socket );
-
+			$Socket = $this->Socket;
 			$this->Socket = null;
+			\fclose( $Socket );
 		}
 	}
 
@@ -78,10 +79,10 @@ class MinecraftPing
 		$this->Socket = $Socket;
 
 		// Set Read/Write timeout
-		\stream_set_timeout( $this->Socket, (int)$this->Timeout );
+		\stream_set_timeout( $this->Socket, (int)$this->Timeout, (int)(($this->Timeout - \floor( $this->Timeout )) * 1000000.0) );
 	}
 
-	/** @return array|false */
+	/** @return array<string, mixed>|false */
 	public function Query( ) : array|bool
 	{
 		if( $this->Socket === null )
@@ -156,10 +157,11 @@ class MinecraftPing
 			return false;
 		}
 
+		/** @var array<string, mixed> $Data */
 		return $Data;
 	}
 
-	/** @return array|false */
+	/** @return array<string, mixed>|false */
 	public function QueryOldPre17( ) : array|bool
 	{
 		if( $this->Socket === null )
@@ -217,6 +219,11 @@ class MinecraftPing
 
 	private function ReadVarInt( ) : int
 	{
+		if( $this->Socket === null )
+		{
+			return 0;
+		}
+
 		$i = 0;
 		$j = 0;
 
@@ -246,5 +253,4 @@ class MinecraftPing
 
 		return $i;
 	}
-
 }
