@@ -26,7 +26,7 @@ class MinecraftQuery
 	{
 		if( $Timeout < 0 )
 		{
-			throw new \InvalidArgumentException( 'Timeout must be a positive integer.' );
+			throw new \InvalidArgumentException( 'Timeout must be non-negative.' );
 		}
 
 		if( $ResolveSRV )
@@ -54,6 +54,7 @@ class MinecraftQuery
 		}
 		finally
 		{
+			$this->Socket = null;
 			\fclose( $Socket );
 		}
 	}
@@ -62,7 +63,7 @@ class MinecraftQuery
 	{
 		if( $Timeout < 0 )
 		{
-			throw new \InvalidArgumentException( 'Timeout must be an integer.' );
+			throw new \InvalidArgumentException( 'Timeout must be non-negative.' );
 		}
 
 		if( $ResolveSRV )
@@ -88,6 +89,7 @@ class MinecraftQuery
 		}
 		finally
 		{
+			$this->Socket = null;
 			\fclose( $Socket );
 		}
 	}

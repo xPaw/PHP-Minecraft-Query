@@ -37,7 +37,7 @@ class MinecraftPing
 	{
 		if( $Timeout < 0 )
 		{
-			throw new \InvalidArgumentException( 'Timeout must be a positive integer.' );
+			throw new \InvalidArgumentException( 'Timeout must be non-negative.' );
 		}
 
 		$this->ServerAddress = $Address;
@@ -69,6 +69,8 @@ class MinecraftPing
 
 	public function Connect( ) : void
 	{
+		$this->Close( );
+
 		$Socket = @\fsockopen( $this->ServerAddress, $this->ServerPort, $errno, $errstr, $this->Timeout );
 
 		if( $Socket === false )
@@ -96,13 +98,13 @@ class MinecraftPing
 		$Data = "\x00"; // packet ID = 0 (varint)
 
 		$Data .= "\xff\xff\xff\xff\x0f"; // Protocol version (varint)
-		$Data .= \pack( 'c', \strlen( $this->ServerAddress ) ) . $this->ServerAddress; // Server (varint len + UTF-8 addr)
+		$Data .= self::WriteVarInt( \strlen( $this->ServerAddress ) ) . $this->ServerAddress; // Server (varint len + UTF-8 addr)
 		$Data .= \pack( 'n', $this->ServerPort ); // Server port (unsigned short)
 		$Data .= "\x01"; // Next state: status (varint)
 
-		$Data = \pack( 'c', \strlen( $Data ) ) . $Data; // prepend length of packet ID + data
+		$Data = self::WriteVarInt( \strlen( $Data ) ) . $Data; // prepend length of packet ID + data
 
-		fwrite( $this->Socket, $Data . "\x01\x00" ); // handshake followed by status ping
+		\fwrite( $this->Socket, $Data . "\x01\x00" ); // handshake followed by status ping
 
 		$Length = $this->ReadVarInt( ); // full packet length
 
@@ -215,6 +217,27 @@ class MinecraftPing
 			'Protocol'   => 0,
 			'Version'    => '1.3'
 		);
+	}
+
+	private static function WriteVarInt( int $Value ) : string
+	{
+		$Result = '';
+
+		do
+		{
+			$Byte = $Value & 0x7F;
+			$Value >>= 7;
+
+			if( $Value !== 0 )
+			{
+				$Byte |= 0x80;
+			}
+
+			$Result .= \chr( $Byte );
+		}
+		while( $Value !== 0 );
+
+		return $Result;
 	}
 
 	private function ReadVarInt( ) : int

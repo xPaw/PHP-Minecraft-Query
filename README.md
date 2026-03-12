@@ -65,7 +65,7 @@ then use function `QueryOldPre17` instead of `Query`.
 
 ----
 
-If the server has query enabled (`enable-query`), then you can use `MinecraftQuery` to more retrieve information about a server.
+If the server has query enabled (`enable-query`), then you can use `MinecraftQuery` to retrieve more information about a server.
 ```php
 require __DIR__ . '/vendor/autoload.php';
 
