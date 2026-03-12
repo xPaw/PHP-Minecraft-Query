@@ -28,7 +28,7 @@ class MinecraftQuery
 
 		if( $ResolveSRV )
 		{
-			$this->ResolveSRV( $Ip, $Port );
+			SRVResolver::Resolve( $Ip, $Port );
 		}
 
 		$Socket = @\fsockopen( 'udp://' . $Ip, $Port, $ErrNo, $ErrStr, $Timeout );
@@ -64,7 +64,7 @@ class MinecraftQuery
 
 		if( $ResolveSRV )
 		{
-			$this->ResolveSRV( $Ip, $Port );
+			SRVResolver::Resolve( $Ip, $Port );
 		}
 
 		$Socket = @\fsockopen( 'udp://' . $Ip, $Port, $ErrNo, $ErrStr, $Timeout );
@@ -302,28 +302,4 @@ class MinecraftQuery
 		return \substr( $Data, 5 );
 	}
 
-	private function ResolveSRV( string &$Address, int &$Port ) : void
-	{
-		if( \ip2long( $Address ) !== false )
-		{
-			return;
-		}
-
-		$Record = @\dns_get_record( '_minecraft._tcp.' . $Address, DNS_SRV );
-
-		if( empty( $Record ) )
-		{
-			return;
-		}
-
-		if( isset( $Record[ 0 ][ 'target' ] ) )
-		{
-			$Address = $Record[ 0 ][ 'target' ];
-		}
-
-		if( isset( $Record[ 0 ][ 'port' ] ) )
-		{
-			$Port = (int)$Record[ 0 ][ 'port' ];
-		}
-	}
 }

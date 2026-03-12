@@ -45,7 +45,7 @@ class MinecraftPing
 
 		if( $ResolveSRV )
 		{
-			$this->ResolveSRV();
+			SRVResolver::Resolve( $this->ServerAddress, $this->ServerPort );
 		}
 
 		$this->Connect( );
@@ -247,28 +247,4 @@ class MinecraftPing
 		return $i;
 	}
 
-	private function ResolveSRV() : void
-	{
-		if( \ip2long( $this->ServerAddress ) !== false )
-		{
-			return;
-		}
-
-		$Record = @\dns_get_record( '_minecraft._tcp.' . $this->ServerAddress, DNS_SRV );
-
-		if( empty( $Record ) )
-		{
-			return;
-		}
-
-		if( isset( $Record[ 0 ][ 'target' ] ) )
-		{
-			$this->ServerAddress = $Record[ 0 ][ 'target' ];
-		}
-
-		if( isset( $Record[ 0 ][ 'port' ] ) )
-		{
-			$this->ServerPort = (int)$Record[ 0 ][ 'port' ];
-		}
-	}
 }
