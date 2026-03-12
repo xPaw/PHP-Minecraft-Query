@@ -13,6 +13,41 @@
         <RiskyTruthyFalsyComparison errorLevel="suppress" />
         <PossiblyUnusedMethod errorLevel="suppress" />
         <InvalidPropertyAssignmentValue errorLevel="suppress" />
+        <UnusedClass>
+            <errorLevel type="suppress">
+                <directory name="tests" />
+            </errorLevel>
+        </UnusedClass>
+        <PropertyNotSetInConstructor>
+            <errorLevel type="suppress">
+                <directory name="tests" />
+            </errorLevel>
+        </PropertyNotSetInConstructor>
+        <MissingOverrideAttribute>
+            <errorLevel type="suppress">
+                <directory name="tests" />
+            </errorLevel>
+        </MissingOverrideAttribute>
+        <RedundantPropertyInitializationCheck>
+            <errorLevel type="suppress">
+                <directory name="tests" />
+            </errorLevel>
+        </RedundantPropertyInitializationCheck>
+        <UnnecessaryVarAnnotation>
+            <errorLevel type="suppress">
+                <directory name="tests" />
+            </errorLevel>
+        </UnnecessaryVarAnnotation>
+        <RedundantCondition>
+            <errorLevel type="suppress">
+                <directory name="tests" />
+            </errorLevel>
+        </RedundantCondition>
+        <UnusedFunctionCall>
+            <errorLevel type="suppress">
+                <directory name="tests" />
+            </errorLevel>
+        </UnusedFunctionCall>
     </issueHandlers>
     <projectFiles>
         <directory name="src" />
