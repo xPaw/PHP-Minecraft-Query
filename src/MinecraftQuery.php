@@ -251,25 +251,42 @@ class MinecraftQuery
 
 		// TODO: What are the 2 bytes after the magic?
 		$Data = \substr( $Data, 35 );
-
-		// TODO: If server-name contains a ';' it is not escaped, and will break this parsing
 		$Data = \explode( ';', $Data );
+
+		// Fields after HostName (index 1): Protocol, Version, Players, MaxPlayers,
+		// ServerId, Map, GameMode, NintendoLimited, IPv4Port, IPv6Port, Extra = 11 fields.
+		// The HostName field can contain unescaped ';', so we parse the known tail
+		// fields from the end and join everything in between as the hostname.
+		$Count = \count( $Data );
+		$TailFields = 11;
+		$TailStart = $Count - $TailFields;
+
+		if( $TailStart < 2 )
+		{
+			// Not enough fields, fall back to simple indexing
+			$HostName = $Data[ 1 ] ?? null;
+			$TailStart = 2;
+		}
+		else
+		{
+			$HostName = \implode( ';', \array_slice( $Data, 1, $TailStart - 1 ) );
+		}
 
 		$this->Info =
 		[
 			'GameName'   => $Data[ 0 ],
-			'HostName'   => $Data[ 1 ] ?? null,
-			'Protocol'   => $Data[ 2 ] ?? null,
-			'Version'    => $Data[ 3 ] ?? null,
-			'Players'    => isset( $Data[ 4 ] ) ? (int)$Data[ 4 ] : 0,
-			'MaxPlayers' => isset( $Data[ 5 ] ) ? (int)$Data[ 5 ] : 0,
-			'ServerId'   => $Data[ 6 ] ?? null,
-			'Map'        => $Data[ 7 ] ?? null,
-			'GameMode'   => $Data[ 8 ] ?? null,
-			'NintendoLimited' => $Data[ 9 ] ?? null,
-			'IPv4Port'   => isset( $Data[ 10 ] ) ? (int)$Data[ 10 ] : 0,
-			'IPv6Port'   => isset( $Data[ 11 ] ) ? (int)$Data[ 11 ] : 0,
-			'Extra'      => $Data[ 12 ] ?? null, // What is this?
+			'HostName'   => $HostName,
+			'Protocol'   => $Data[ $TailStart ] ?? null,
+			'Version'    => $Data[ $TailStart + 1 ] ?? null,
+			'Players'    => isset( $Data[ $TailStart + 2 ] ) ? (int)$Data[ $TailStart + 2 ] : 0,
+			'MaxPlayers' => isset( $Data[ $TailStart + 3 ] ) ? (int)$Data[ $TailStart + 3 ] : 0,
+			'ServerId'   => $Data[ $TailStart + 4 ] ?? null,
+			'Map'        => $Data[ $TailStart + 5 ] ?? null,
+			'GameMode'   => $Data[ $TailStart + 6 ] ?? null,
+			'NintendoLimited' => $Data[ $TailStart + 7 ] ?? null,
+			'IPv4Port'   => isset( $Data[ $TailStart + 8 ] ) ? (int)$Data[ $TailStart + 8 ] : 0,
+			'IPv6Port'   => isset( $Data[ $TailStart + 9 ] ) ? (int)$Data[ $TailStart + 9 ] : 0,
+			'Extra'      => $Data[ $TailStart + 10 ] ?? null, // What is this?
 		];
 		$this->Players = null;
 	}
