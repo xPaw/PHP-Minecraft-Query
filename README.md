@@ -27,33 +27,37 @@ It is possible to send console commands to a Minecraft server remotely using the
 ## SRV DNS record
 This library automatically tries to resolve SRV records. If you do not wish to do so, pass `false` as the fourth param in the constructor (after timeout param).
 
+## Installation
+```
+composer require xpaw/php-minecraft-query
+```
+
 ## Example
 ```php
-<?php
-	require __DIR__ . '/src/MinecraftPing.php';
-	require __DIR__ . '/src/MinecraftPingException.php';
-	
-	use xPaw\MinecraftPing;
-	use xPaw\MinecraftPingException;
-	
-	try
+require __DIR__ . '/vendor/autoload.php';
+
+use xPaw\MinecraftPing;
+use xPaw\MinecraftPingException;
+
+$Query = null;
+
+try
+{
+	$Query = new MinecraftPing( 'localhost', 25565 );
+
+	print_r( $Query->Query() );
+}
+catch( MinecraftPingException $e )
+{
+	echo $e->getMessage();
+}
+finally
+{
+	if( $Query !== null )
 	{
-		$Query = new MinecraftPing( 'localhost', 25565 );
-		
-		print_r( $Query->Query() );
+		$Query->Close();
 	}
-	catch( MinecraftPingException $e )
-	{
-		echo $e->getMessage();
-	}
-	finally
-	{
-		if( $Query )
-		{
-			$Query->Close();
-		}
-	}
-?>
+}
 ```
 
 If you want to get `ping` info from a server that uses a version older than Minecraft 1.7,
@@ -63,30 +67,46 @@ then use function `QueryOldPre17` instead of `Query`.
 
 If the server has query enabled (`enable-query`), then you can use `MinecraftQuery` to more retrieve information about a server.
 ```php
-<?php
-	require __DIR__ . '/src/MinecraftQuery.php';
-	require __DIR__ . '/src/MinecraftQueryException.php';
-	
-	use xPaw\MinecraftQuery;
-	use xPaw\MinecraftQueryException;
-	
-	$Query = new MinecraftQuery( );
-	
-	try
-	{
-		$Query->Connect( 'localhost', 25565 );
-		
-		print_r( $Query->GetInfo( ) );
-		print_r( $Query->GetPlayers( ) );
-	}
-	catch( MinecraftQueryException $e )
-	{
-		echo $e->getMessage( );
-	}
-?>
+require __DIR__ . '/vendor/autoload.php';
+
+use xPaw\MinecraftQuery;
+use xPaw\MinecraftQueryException;
+
+$Query = new MinecraftQuery( );
+
+try
+{
+	$Query->Connect( 'localhost', 25565 );
+
+	print_r( $Query->GetInfo( ) );
+	print_r( $Query->GetPlayers( ) );
+}
+catch( MinecraftQueryException $e )
+{
+	echo $e->getMessage( );
+}
 ```
 
-For Bedrock servers (MCPE) use `ConnectBedrock` function instead of `Connect`, then `GetInfo` will work.
+For Bedrock servers (MCPE) use `ConnectBedrock` instead of `Connect`:
+```php
+require __DIR__ . '/vendor/autoload.php';
+
+use xPaw\MinecraftQuery;
+use xPaw\MinecraftQueryException;
+
+$Query = new MinecraftQuery( );
+
+try
+{
+	$Query->ConnectBedrock( 'localhost', 19132 );
+
+	print_r( $Query->GetInfo( ) );
+}
+catch( MinecraftQueryException $e )
+{
+	echo $e->getMessage( );
+}
+```
 
 ## License
 [MIT](LICENSE)
